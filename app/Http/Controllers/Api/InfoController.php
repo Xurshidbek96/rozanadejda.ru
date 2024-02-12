@@ -25,6 +25,7 @@ class InfoController extends Controller
         $data['products'] = $products;
         return $this->checkData($data);
     }
+    
     public function getAllProducts()
     {
         $products = ProductResource::collection(Product::latest()->get());
