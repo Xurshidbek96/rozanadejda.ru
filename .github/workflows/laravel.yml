@@ -54,9 +54,9 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
             cd web/host32.firstcoders.site/public_html/
-            git pull origin master
-            php artisan migrate:refresh
-            php artisan config:cache
-            php artisan route:cache
-            php artisan optimize
+            git pull origin main
+            /usr/bin/php8.2 artisan migrate:refresh
+            /usr/bin/php8.2 artisan config:cache
+            /usr/bin/php8.2 artisan route:cache
+            /usr/bin/php8.2 artisan optimize
           EOF
