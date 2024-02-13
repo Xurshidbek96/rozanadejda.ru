@@ -14,7 +14,7 @@ use Illuminate\Http\Request;
 class InfoController extends Controller
 {
     public function getAllCategories(){
-        $categories = Category::all() ;
+        $categories = Category::latest()->get() ;
         return $this->checkData($categories);
     }
 
@@ -25,7 +25,7 @@ class InfoController extends Controller
         $data['products'] = $products;
         return $this->checkData($data);
     }
-    
+
     public function getAllProducts()
     {
         $products = ProductResource::collection(Product::latest()->get());
