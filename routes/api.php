@@ -25,7 +25,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::auto('/auth', AuthController::class);
 
-Route::prefix('admin')->group(function () {
+Route::prefix('admin')->middleware('auth:sanctum')->group(function () {
     Route::apiResources([
         'categories' => CategoryController::class,
         'products' => ProductController::class,

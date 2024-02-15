@@ -14,7 +14,7 @@ use Illuminate\Http\Request;
 class InfoController extends Controller
 {
     public function getAllCategories(){
-        $categories = Category::latest()->get() ;
+        $categories = Category::all() ;
         return $this->checkData($categories);
     }
 
