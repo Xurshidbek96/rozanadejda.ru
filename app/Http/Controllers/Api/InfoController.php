@@ -9,10 +9,15 @@ use App\Models\Category;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
+use App\Models\Slide;
 use Illuminate\Http\Request;
 
 class InfoController extends Controller
 {
+    public function getAllSlides(){
+        $slides = Slide::all() ;
+        return $this->checkData($slides);
+    }
     public function getAllCategories(){
         $categories = Category::all() ;
         return $this->checkData($categories);
@@ -28,8 +33,8 @@ class InfoController extends Controller
 
     public function getAllProducts()
     {
-        $products = ProductResource::collection(Product::latest()->get());
-        return $this->checkData($products);
+        $products = ProductResource::collection(Product::latest()->paginate(12));
+        return $products;
     }
 
     public function getshowProduct(Product $product)

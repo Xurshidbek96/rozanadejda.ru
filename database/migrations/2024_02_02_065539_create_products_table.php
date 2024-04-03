@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('latest')->nullable();
             $table->string('color')->nullable();
             $table->string('petal')->nullable();
+            $table->string('shape')->nullable();
             $table->string('height')->nullable();
             $table->string('smell')->nullable();
             $table->float('price', 14, 2)->nullable();

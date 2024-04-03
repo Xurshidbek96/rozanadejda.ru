@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\SlideController;
 use App\Http\Controllers\Api\InfoController;
 use App\Http\Controllers\Auth\AuthController;
 use Illuminate\Http\Request;
@@ -29,8 +30,10 @@ Route::prefix('admin')->middleware('auth:sanctum')->group(function () {
     Route::apiResources([
         'categories' => CategoryController::class,
         'products' => ProductController::class,
+        'slides' => SlideController::class,
     ]);
     Route::post('productUpdate/{product}', [ProductController::class, 'productUpdate']);
+    Route::post('slideUpdate/{slide}', [SlideController::class, 'slideUpdate']);
     Route::get('searchProduct', [ProductController::class, 'search']);
     Route::auto('/order', OrderController::class);
 });
