@@ -58,10 +58,10 @@ class InfoController extends Controller
 
         // Create order items
         foreach($request->products as $item){
-            $product = Product::find($item['id']);
+            $product = Product::find($item['product_id']);
             $orderItem = OrderItem::create([
                 'order_id' => $order->id,
-                'product_id' => $item['id'],
+                'product_id' => $item['product_id'],
                 'quantity' => $item['quantity'],
                 'total' => $item['quantity'] * $product->price,
             ]);
