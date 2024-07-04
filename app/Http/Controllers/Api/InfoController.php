@@ -37,8 +37,9 @@ class InfoController extends Controller
         return $products;
     }
 
-    public function getshowProduct(Product $product)
+    public function getshowProduct($slug)
     {
+        $product = Product::where('slug', $slug)->firstOr();
         $data = new ProductResource($product);
         return $this->checkData($data);
     }
@@ -52,6 +53,11 @@ class InfoController extends Controller
         $order = Order::create([
             'user_name' => $request->user_name,
             'user_phone' => $request->user_phone,
+            'user_email' => $request->user_email,
+            'user_address' => $request->user_address,
+            'street' => $request->street,
+            'home_number' => $request->home_number,
+            'postal_code' => $request->postal_code,
             'status' => 'waiting'
         ]);
         $full_price = 0 ;

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('name_uz')->nullable();
             $table->string('name_ru')->nullable();
             $table->string('name_en')->nullable();
+            $table->string('slug')->nullable();
             $table->integer('year')->nullable();
             $table->string('breeder')->nullable();
             $table->string('latest')->nullable();
@@ -29,6 +30,10 @@ return new class extends Migration
             $table->bigInteger('quantity')->nullable();
             $table->string('yesorno')->nullable();
             $table->text('about')->nullable();
+
+            $table->string('seo_tag')->nullable();
+            $table->string('seo_title')->nullable();
+            $table->string('seo_description')->nullable();
             $table->timestamps();
         });
     }

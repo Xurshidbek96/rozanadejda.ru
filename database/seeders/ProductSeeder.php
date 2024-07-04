@@ -18,6 +18,7 @@ class ProductSeeder extends Seeder
             'name_uz' => 'Anny Duperey',
             'name_ru' => 'Анни Дюпрей',
             'name_en' => 'Anny Duperey',
+            'slug' => 'anny-duperey',
             'year' => 2006,
             'breeder' => 'Meilland, Франция',
             'latest' => 'new',
@@ -30,6 +31,9 @@ class ProductSeeder extends Seeder
             'quantity' => 1200,
             'yesorno' => 'yes',
             'about' => 'Цвет, аромат и романтическая форма цветков этого сорта великолепно сочетаются друг c другом. Роза позволяет создавать великолепные бордеры в старинном стиле. Насыщенный цитрусовый аромат',
+            'seo_title' => 'Test',
+            'seo_tag' => 'Test',
+            'seo_description' => 'Test',
         ]);
 
         Product::create([
@@ -37,6 +41,7 @@ class ProductSeeder extends Seeder
             'name_uz' => 'Anny',
             'name_ru' => 'Анни',
             'name_en' => 'Anny',
+            'slug' => 'anny',
             'year' => 2006,
             'breeder' => 'Франция',
             'latest' => 'new',
@@ -49,6 +54,9 @@ class ProductSeeder extends Seeder
             'quantity' => 1350,
             'yesorno' => 'yes',
             'about' => 'Цвет, аромат и романтическая форма цветков этого сорта великолепно сочетаются друг c другом. Роза позволяет создавать великолепные бордеры в старинном стиле. Насыщенный цитрусовый аромат',
+            'seo_title' => 'Test',
+            'seo_tag' => 'Test',
+            'seo_description' => 'Test',
         ]);
 
     }

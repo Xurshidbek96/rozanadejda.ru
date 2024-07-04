@@ -16,6 +16,13 @@ class ProductAdminService
 
     public function store($request){
 
+        $request->validate([
+            'name_uz' => 'unique:products,name_uz,except,id',
+            'name_ru' => 'unique:products,name_ru,except,id',
+            'name_en' => 'unique:products,name_en,except,id',
+            'slug' => 'required'
+        ]) ;
+
         $requestData = $request->except('files');
         $product = Product::create($requestData);
         if ($request->hasFile('files')) {
@@ -36,6 +43,12 @@ class ProductAdminService
 
     public function update($request, $product){
         // return $request ;
+        $request->validate([
+            'name_uz' => 'unique:products,name_uz,except,id',
+            'name_ru' => 'unique:products,name_ru,except,id',
+            'name_en' => 'unique:products,name_en,except,id',
+            'slug' => 'required'
+        ]) ;
         $requestData = $request->except('files');
         $product->update($requestData);
 
