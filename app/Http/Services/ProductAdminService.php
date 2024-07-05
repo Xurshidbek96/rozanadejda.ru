@@ -47,7 +47,7 @@ class ProductAdminService
             'name_uz' => 'unique:products,name_uz,except,id',
             'name_ru' => 'unique:products,name_ru,except,id',
             'name_en' => 'unique:products,name_en,except,id',
-            'slug' => 'required'
+            // 'slug' => 'required'
         ]) ;
         $requestData = $request->except('files');
         $product->update($requestData);
