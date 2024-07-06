@@ -14,6 +14,23 @@ use Illuminate\Http\Request;
 
 class InfoController extends Controller
 {
+    public function dashboard(){
+        $dashboard['accepted_orders'] = Order::where('status', 'accept')->count() ;
+        $orders = Order::where('status', 'accept')->get() ;
+
+        $c = 0 ;
+        foreach ($orders as $order) {
+            $orderItems = OrderItem::where('order_id', $order->id)->get();
+            foreach ($orderItems as $orderItem) {
+                $c += $orderItem->quantity;
+            }
+        }
+
+        $dashboard['products_quantity'] =$c ;
+
+        return $this->checkData($dashboard) ;
+    }
+
     public function getAllSlides(){
         $slides = Slide::all() ;
         return $this->checkData($slides);
