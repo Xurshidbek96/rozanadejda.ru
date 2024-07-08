@@ -26,7 +26,7 @@ class InfoController extends Controller
             }
         }
 
-        $dashboard['products_quantity'] =$c ;
+        $dashboard['products_quantity'] = $c ;
 
         return $this->checkData($dashboard) ;
     }

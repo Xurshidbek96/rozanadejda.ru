@@ -5,23 +5,25 @@ namespace App\Http\Services;
 use App\Http\Resources\ProductResource;
 use App\Models\Image;
 use App\Models\Product;
+use Intervention\Image\Facades\Image as ImageManager;
 
 class ProductAdminService
 {
-    public function getAllProducts(){
+    public function getAllProducts()
+    {
         $products = ProductResource::collection(Product::latest()->paginate(10));
 
         return $products;
     }
 
-    public function store($request){
-
+    public function store($request)
+    {
         $request->validate([
             'name_uz' => 'unique:products,name_uz,except,id',
             'name_ru' => 'unique:products,name_ru,except,id',
             'name_en' => 'unique:products,name_en,except,id',
             'slug' => 'required'
-        ]) ;
+        ]);
 
         $requestData = $request->except('files');
         $product = Product::create($requestData);
@@ -29,26 +31,42 @@ class ProductAdminService
             $files = $request->file('files');
             foreach ($files as $file) {
                 $filename = time() . '-' . $file->getClientOriginalName();
+                $filePath = public_path('images/products/' . $filename);
+
+                // Move the file to the public path
                 $file->move(public_path('images/products'), $filename);
+
+                // Open the file with Intervention Image
+                $image = ImageManager::make($filePath);
+
+                // Add watermark
+                $watermark = ImageManager::make(public_path('images/products/water.png')); // Make sure you have a watermark image in the public directory
+                $image->insert($watermark, 'bottom-right', 10, 10); // Adjust the position as needed
+
+                // Save the image with the watermark
+                $image->save($filePath);
+
                 $images[] = Image::create([
                     'product_id' => $product->id,
                     'filename' => $filename
                 ]);
             }
+        } else {
+            $images = null;
         }
-        else $images = null;
 
-        return $product ;
+        return $product;
     }
 
-    public function update($request, $product){
+    public function update($request, $product)
+    {
         // return $request ;
         $request->validate([
             'name_uz' => 'unique:products,name_uz,except,id',
             'name_ru' => 'unique:products,name_ru,except,id',
             'name_en' => 'unique:products,name_en,except,id',
             // 'slug' => 'required'
-        ]) ;
+        ]);
         $requestData = $request->except('files');
         $product->update($requestData);
 
@@ -79,6 +97,4 @@ class ProductAdminService
         $product->load('images');
         return $product;
     }
-
 }
-
