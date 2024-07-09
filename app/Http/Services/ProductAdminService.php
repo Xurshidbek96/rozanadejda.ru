@@ -41,7 +41,7 @@ class ProductAdminService
 
                 // Add watermark
                 $watermark = ImageManager::make(public_path('images/products/water.png')); // Make sure you have a watermark image in the public directory
-                $image->insert($watermark, 'bottom-right', 10, 10); // Adjust the position as needed
+                $image->insert($watermark, 'bottom-right', 15, 15); // Adjust the position as needed
 
                 // Save the image with the watermark
                 $image->save($filePath);
