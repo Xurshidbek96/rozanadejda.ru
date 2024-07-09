@@ -35,8 +35,9 @@ Route::prefix('admin')->middleware('auth:sanctum')->group(function () {
     Route::post('productUpdate/{product}', [ProductController::class, 'productUpdate']);
     Route::post('slideUpdate/{slide}', [SlideController::class, 'slideUpdate']);
     Route::get('searchProduct', [ProductController::class, 'search']);
-    Route::auto('/order', OrderController::class);
+
 });
+Route::auto('admin/order', OrderController::class);
 
 Route::auto('/info', InfoController::class) ;
 
