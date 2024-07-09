@@ -18,15 +18,19 @@ class InfoController extends Controller
         $dashboard['accepted_orders'] = Order::where('status', 'accept')->count() ;
         $orders = Order::where('status', 'accept')->get() ;
 
-        $c = 0 ;
+        $products_quantity = 0 ;
+        $full_price = 0 ;
         foreach ($orders as $order) {
             $orderItems = OrderItem::where('order_id', $order->id)->get();
             foreach ($orderItems as $orderItem) {
-                $c += $orderItem->quantity;
+                $products_quantity += $orderItem->quantity;
             }
+
+            $full_price += $order->full_price ;
         }
 
-        $dashboard['products_quantity'] = $c ;
+        $dashboard['products_quantity'] = $products_quantity ;
+        $dashboard['full_price'] = $full_price ;
 
         return $this->checkData($dashboard) ;
     }
