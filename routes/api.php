@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SlideController;
 use App\Http\Controllers\Api\InfoController;
 use App\Http\Controllers\Auth\AuthController;
+use Illuminate\Support\Facades\Artisan ;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -42,6 +43,6 @@ Route::auto('admin/order', OrderController::class);
 Route::auto('/info', InfoController::class) ;
 
 Route::get('/artisan/{name}', function ($name) {
-    \Artisan::call($name);
+    Artisan::call($name);
     return 'OK';
 });
