@@ -47,7 +47,7 @@ class ProductAdminService
                 $watermark = ImageManager::make(public_path('images/products/water.png'));
 
                 // Suv belgisining o'lchamini asosiy rasmning o'lchamiga moslashtiramiz
-                $watermarkSize = min($image->width() * 0.1, $image->height() * 0.1); // Suv belgisining hajmi rasmning 10% bo'ladi
+                $watermarkSize = min($image->width() * 0.3, $image->height() * 0.3); // Suv belgisining hajmi rasmning 10% bo'ladi
                 $watermark->resize($watermarkSize, $watermarkSize, function ($constraint) {
                     $constraint->aspectRatio();
                     $constraint->upsize();
