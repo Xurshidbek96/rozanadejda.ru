@@ -40,8 +40,18 @@ class ProductAdminService
                 $image = ImageManager::make($filePath);
 
                 // Add watermark
-                $watermark = ImageManager::make(public_path('images/products/water.png')); // Make sure you have a watermark image in the public directory
-                $image->insert($watermark, 'bottom-right', 15, 15); // Adjust the position as needed
+                // $watermark = ImageManager::make(public_path('images/products/water.png')); // Make sure you have a watermark image in the public directory
+                // $image->insert($watermark, 'bottom-right', 15, 15); // Adjust the position as needed
+
+                // Suv belgisini yuklaymiz
+                $watermark = ImageManager::make(public_path('images/products/water.png'));
+
+                // Suv belgisining o'lchamini asosiy rasmning o'lchamiga moslashtiramiz
+                $watermarkSize = min($image->width() * 0.1, $image->height() * 0.1); // Suv belgisining hajmi rasmning 10% bo'ladi
+                $watermark->resize($watermarkSize, $watermarkSize);
+
+                // Suv belgisini asosiy rasmga qo'shamiz
+                $image->insert($watermark, 'bottom-right', 15, 15);
 
                 // Save the image with the watermark
                 $image->save($filePath);
