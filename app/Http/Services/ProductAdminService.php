@@ -48,7 +48,10 @@ class ProductAdminService
 
                 // Suv belgisining o'lchamini asosiy rasmning o'lchamiga moslashtiramiz
                 $watermarkSize = min($image->width() * 0.1, $image->height() * 0.1); // Suv belgisining hajmi rasmning 10% bo'ladi
-                $watermark->resize($watermarkSize, $watermarkSize);
+                $watermark->resize($watermarkSize, $watermarkSize, function ($constraint) {
+                    $constraint->aspectRatio();
+                    $constraint->upsize();
+                });
 
                 // Suv belgisini asosiy rasmga qo'shamiz
                 $image->insert($watermark, 'bottom-right', 15, 15);
