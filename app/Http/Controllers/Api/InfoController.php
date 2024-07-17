@@ -104,4 +104,8 @@ class InfoController extends Controller
         ]);
         return $this->checkData($order);
     }
+
+    public function getDailyOrderDelete(){
+        Order::where('status', 'reject')->delete();
+    }
 }
