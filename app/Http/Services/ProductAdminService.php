@@ -39,10 +39,6 @@ class ProductAdminService
                 // Open the file with Intervention Image
                 $image = ImageManager::make($filePath);
 
-                // Add watermark
-                // $watermark = ImageManager::make(public_path('images/products/water.png')); // Make sure you have a watermark image in the public directory
-                // $image->insert($watermark, 'bottom-right', 15, 15); // Adjust the position as needed
-
                 // Suv belgisini yuklaymiz
                 $watermark = ImageManager::make(public_path('images/products/water.png'));
 
@@ -99,7 +95,29 @@ class ProductAdminService
             // Yangi rasmlarni qo'shish
             foreach ($files as $file) {
                 $filename = time() . '-' . $file->getClientOriginalName();
+                $filePath = public_path('images/products/' . $filename);
+
+                // Move the file to the public path
                 $file->move(public_path('images/products'), $filename);
+
+                // Open the file with Intervention Image
+                $image = ImageManager::make($filePath);
+
+                // Suv belgisini yuklaymiz
+                $watermark = ImageManager::make(public_path('images/products/water.png'));
+
+                // Suv belgisining o'lchamini asosiy rasmning o'lchamiga moslashtiramiz
+                $watermarkSize = min($image->width() * 0.3, $image->height() * 0.3); // Suv belgisining hajmi rasmning 10% bo'ladi
+                $watermark->resize($watermarkSize, $watermarkSize, function ($constraint) {
+                    $constraint->aspectRatio();
+                    $constraint->upsize();
+                });
+
+                // Suv belgisini asosiy rasmga qo'shamiz
+                $image->insert($watermark, 'bottom-right', 15, 15);
+
+                // Save the image with the watermark
+                $image->save($filePath);
 
                 $images[] = Image::create([
                     'product_id' => $product->id,
