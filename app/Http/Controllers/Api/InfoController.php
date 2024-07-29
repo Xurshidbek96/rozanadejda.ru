@@ -54,7 +54,7 @@ class InfoController extends Controller
 
     public function getAllProducts()
     {
-        $products = ProductResource::collection(Product::latest()->paginate(12));
+        $products = ProductResource::collection(Product::latest()->get());
         return $products;
     }
 
