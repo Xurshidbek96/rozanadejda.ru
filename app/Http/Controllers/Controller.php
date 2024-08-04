@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -26,7 +27,7 @@ class Controller extends BaseController
             ->orWhere('name_en', 'like', '%' . $search . '%') ;
 
         $data['total'] = $products->count();
-        $data['products'] = $products->latest()->get();
+        $data['products'] = ProductResource::collection($products->latest()->get());
         return $this->checkData($data);
     }
 
