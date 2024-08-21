@@ -16,8 +16,6 @@ class ProductResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'category_id' => $this->category->id,
-            'category_name_uz' => $this->category->name_uz,
             'name_uz' => $this->name_uz,
             'name_ru' => $this->name_ru,
             'name_en' => $this->name_en,
@@ -38,6 +36,7 @@ class ProductResource extends JsonResource
             'seo_tag' => $this->seo_tag,
             'seo_description' => $this->seo_description,
             'images' => ImageResource::collection($this->images),
+            'categories' => $this->categories->toArray(),
         ];
     }
 }

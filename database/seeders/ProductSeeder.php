@@ -13,8 +13,7 @@ class ProductSeeder extends Seeder
      */
     public function run(): void
     {
-        Product::create([
-            'category_id' => 1,
+        $product = Product::create([
             'name_uz' => 'Anny Duperey',
             'name_ru' => 'Анни Дюпрей',
             'name_en' => 'Anny Duperey',
@@ -36,8 +35,9 @@ class ProductSeeder extends Seeder
             'seo_description' => 'Test',
         ]);
 
-        Product::create([
-            'category_id' => 2,
+        $product->categories()->attach([1,2]);
+
+        $product = Product::create([
             'name_uz' => 'Anny',
             'name_ru' => 'Анни',
             'name_en' => 'Anny',
@@ -58,6 +58,7 @@ class ProductSeeder extends Seeder
             'seo_tag' => 'Test',
             'seo_description' => 'Test',
         ]);
+        $product->categories()->attach([2,3]);
 
     }
 }

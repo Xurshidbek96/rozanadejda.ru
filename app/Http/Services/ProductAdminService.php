@@ -25,8 +25,9 @@ class ProductAdminService
             'slug' => 'required'
         ]);
 
-        $requestData = $request->except('files');
+        $requestData = $request->except('files', 'categories');
         $product = Product::create($requestData);
+        $product->categories()->attach($request->categories);
         if ($request->hasFile('files')) {
             $files = $request->file('files');
             foreach ($files as $file) {
@@ -76,8 +77,9 @@ class ProductAdminService
             'name_en' => 'unique:products,name_en,except,id',
             // 'slug' => 'required'
         ]);
-        $requestData = $request->except('files');
+        $requestData = $request->except('files', 'categories');
         $product->update($requestData);
+        $product->categories()->sync($request->categories);
 
         // Rasmlarni yangilash
         if ($request->hasFile('files')) {

@@ -46,7 +46,11 @@ class InfoController extends Controller
 
     public function getCategoryProducts($id)
     {
-        $products = ProductResource::collection(Product::where('category_id', $id)->latest()->get());
+        $products = ProductResource::collection(
+            Product::whereHas('categories', function ($query) use ($id) {
+                $query->where('category_id', $id);
+            })->latest()->get()
+        );
         $data['total'] = $products->count();
         $data['products'] = $products;
         return $this->checkData($data);

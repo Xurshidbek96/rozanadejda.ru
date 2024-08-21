@@ -22,7 +22,6 @@ class ProductStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'category_id' => 'required|numeric',
             'year' => 'numeric',
             'price' => 'numeric',
             'quantity' => 'numeric',

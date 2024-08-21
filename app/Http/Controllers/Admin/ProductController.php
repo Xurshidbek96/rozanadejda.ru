@@ -26,6 +26,7 @@ class ProductController extends Controller
 
     public function store(ProductStoreRequest $request)
     {
+        // return $request ;
         $data = $this->productAdminService->store($request);
         return $this->checkData($data);
     }
@@ -50,6 +51,8 @@ class ProductController extends Controller
                 unlink($imagePath);
             }
         }
+        $product->categories()->detach();
+        $product->images()->delete();
         $data = $product->delete();
 
         return $this->checkData($data);
