@@ -13,8 +13,10 @@ return new class extends Migration
     {
         Schema::create('images', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id')->references('id')->on('products')->onDelete('cascade');
-            $table->string('filename')->nullable();
+            $table->foreignId('product_id')->constrained()->onDelete('cascade');
+            $table->string('filename');
+            $table->string('alt_text')->nullable();
+            $table->boolean('is_primary')->default(false);
             $table->timestamps();
         });
     }

@@ -8,63 +8,75 @@ use Illuminate\Http\Request;
 
 class SlideController extends Controller
 {
+    private const SLIDES_DIRECTORY = 'images/slides/';
+
     /**
-     * Display a listing of the resource.
+     * Display a listing of slides
      */
     public function index()
     {
         $slides = Slide::all();
-        return $this->checkData($slides);
+        return $this->apiResponse($slides);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created slide
      */
     public function store(Request $request)
     {
-        $requestData = $request->only('image');
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
+        ]);
+
+        $slideData = [];
+        
         if ($request->hasFile('image')) {
-            $file = $request->file('image');
-            $filename = time() . '-' . $file->getClientOriginalName();
-            $file->move(public_path('images/slides'), $filename);
-            $requestData['image'] = $filename;
+            $slideData['image'] = $this->uploadFile('image', self::SLIDES_DIRECTORY);
         }
-        $slide = Slide::create($requestData);
-        return $this->checkData($slide);
+
+        $slide = Slide::create($slideData);
+        return $this->apiResponse($slide);
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified slide
      */
     public function show(Slide $slide)
     {
-        return $this->checkData($slide);
+        return $this->apiResponse($slide);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified slide
      */
-    public function slideUpdate(Request $request, Slide $slide)
+    public function update(Request $request, Slide $slide)
     {
-        $requestData = $request->only('image');
+        $request->validate([
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+        ]);
+
+        $slideData = [];
+
         if ($request->hasFile('image')) {
-            $this->unlink_file('images/slides/', $slide->image);
-            $file = $request->file('image');
-            $filename = time() . '-' . $file->getClientOriginalName();
-            $file->move(public_path('images/slides'), $filename);
-            $requestData['image'] = $filename;
+            // Delete old image
+            $this->deleteFile(self::SLIDES_DIRECTORY, $slide->image);
+            
+            // Upload new image
+            $slideData['image'] = $this->uploadFile('image', self::SLIDES_DIRECTORY);
         }
-        $slide->update($requestData);
-        return $this->checkData($slide);
+
+        $slide->update($slideData);
+        return $this->apiResponse($slide);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified slide
      */
     public function destroy(Slide $slide)
     {
-        $this->unlink_file('images/slides/', $slide->image);
-        $data = $slide->delete();
-        return $this->checkData($data);
+        $this->deleteFile(self::SLIDES_DIRECTORY, $slide->image);
+        $slide->delete();
+        
+        return $this->apiResponse(['message' => 'Slide deleted successfully']);
     }
 }

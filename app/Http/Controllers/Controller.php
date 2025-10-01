@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\ProductResource;
-use App\Models\Product;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
@@ -12,37 +10,36 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, ValidatesRequests;
 
-    public function checkData($data){
-        if (!$data )
-            return response()->json(['status' => false, 'data' => null]);
-
-        return response()->json(['status' => true, 'data' => $data]);
-    }
-
-    public function search($request){
-        $request->validate(['search' => 'required']);
-        $search = $request->search;
-        $products = Product::where('name_uz', 'like', '%' . $search . '%')
-            ->orWhere('name_ru', 'like', '%' . $search . '%')
-            ->orWhere('name_en', 'like', '%' . $search . '%') ;
-
-        $data['total'] = $products->count();
-        $data['products'] = ProductResource::collection($products->latest()->get());
-        return $this->checkData($data);
-    }
-
-    public function upload_file($file_name, $folder)
+    /**
+     * Standard response format for API endpoints
+     */
+    protected function apiResponse($data, bool $status = true): \Illuminate\Http\JsonResponse
     {
-        $file = request()->file($file_name);
+        return response()->json([
+            'status' => $status,
+            'data' => $data
+        ]);
+    }
+
+    /**
+     * Upload file to specified directory
+     */
+    protected function uploadFile(string $fileInputName, string $directory): string
+    {
+        $file = request()->file($fileInputName);
         $fileName = time() . '-' . $file->getClientOriginalName();
-        $file->move($folder, $fileName);
+        $file->move(public_path($directory), $fileName);
+        
         return $fileName;
     }
 
-    public function unlink_file($folder, $file_name)
+    /**
+     * Delete file from specified directory
+     */
+    protected function deleteFile(string $directory, ?string $fileName): void
     {
-        if (isset($file_name) && file_exists(public_path($folder . $file_name))) {
-            unlink(public_path($folder . $file_name));
+        if ($fileName && file_exists(public_path($directory . $fileName))) {
+            unlink(public_path($directory . $fileName));
         }
     }
 }

@@ -13,16 +13,16 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->string('user_name');
-            $table->string('user_phone');
-            $table->string('user_email')->nullable();
-            $table->string('user_address')->nullable();
-            $table->string('street')->nullable();
-            $table->string('home_number')->nullable();
-            $table->string('postal_code')->nullable();
-            $table->string('status')->default('waiting')->comment('waiting, accept, reject');
-            $table->float('full_price', 14, 2)->nullable();
-            $table->integer('adminShow')->default(0)->comment('0 - not show, 1 - show');
+            $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
+            $table->string('customer_name');
+            $table->string('phone');
+            $table->string('email')->nullable();
+            $table->text('shipping_address');
+            $table->enum('status', ['pending', 'processing', 'shipped', 'delivered', 'cancelled'])
+                  ->default('pending');
+            $table->decimal('total_amount', 10, 2);
+            $table->text('notes')->nullable();
+            $table->boolean('is_viewed_by_admin')->default(false);
             $table->timestamps();
         });
     }

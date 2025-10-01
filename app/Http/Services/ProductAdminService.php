@@ -28,6 +28,7 @@ class ProductAdminService
         $requestData = $request->except('files', 'categories');
         $product = Product::create($requestData);
         $product->categories()->attach($request->categories);
+        
         if ($request->hasFile('files')) {
             $files = $request->file('files');
             foreach ($files as $file) {
