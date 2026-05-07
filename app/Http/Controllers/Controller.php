@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ProductResource;
+use App\Models\Product;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 
 class Controller extends BaseController
@@ -18,6 +21,28 @@ class Controller extends BaseController
         return response()->json([
             'status' => $status,
             'data' => $data
+        ]);
+    }
+
+    /**
+     * Backward-compatible alias used by existing controllers.
+     */
+    protected function checkData($data, bool $status = true): \Illuminate\Http\JsonResponse
+    {
+        return $this->apiResponse($data, $status);
+    }
+
+    /**
+     * Shared product search response used in admin/info controllers.
+     */
+    protected function search(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $search = (string) $request->query('search', $request->query('q', ''));
+        $products = ProductResource::collection(Product::query()->search($search)->latest()->get());
+
+        return $this->apiResponse([
+            'total' => $products->count(),
+            'products' => $products,
         ]);
     }
 

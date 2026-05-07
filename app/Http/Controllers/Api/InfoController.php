@@ -59,7 +59,10 @@ class InfoController extends Controller
     public function getAllProducts()
     {
         $products = ProductResource::collection(Product::latest()->get());
-        return $products;
+        return $this->checkData([
+            'total' => $products->count(),
+            'products' => $products,
+        ]);
     }
 
     public function getshowProduct($slug)
@@ -110,6 +113,7 @@ class InfoController extends Controller
     }
 
     public function getDailyOrderDelete(){
-        Order::where('status', 'reject')->delete();
+        $deleted = Order::where('status', 'reject')->delete();
+        return $this->checkData(['deleted' => $deleted]);
     }
 }

@@ -1,0 +1,951 @@
+openapi: 3.0.3
+info:
+  title: Rozanadejda API
+  version: 1.0.0
+  description: |
+    Canonical API specification for the Laravel backend.
+    Base prefix is `/api`.
+servers:
+  - url: http://localhost/api
+    description: Local
+tags:
+  - name: Auth
+  - name: User
+  - name: Admin Categories
+  - name: Admin Products
+  - name: Admin Slides
+  - name: Admin Orders
+  - name: Public Info
+paths:
+  /user:
+    get:
+      tags: [User]
+      summary: Get current authenticated user
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: User object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /auth/register:
+    post:
+      tags: [Auth]
+      summary: Register user and return Sanctum token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthRegisterRequest"
+      responses:
+        "200":
+          description: Registration successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthSuccessResponse"
+        "401":
+          description: Validation error (legacy status code in current app)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthErrorResponse"
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Login and return Sanctum token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthLoginRequest"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthLoginSuccessResponse"
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthErrorResponse"
+
+  /admin/categories:
+    get:
+      tags: [Admin Categories]
+      summary: List categories
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiCategoryList"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+    post:
+      tags: [Admin Categories]
+      summary: Create category
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CategoryWriteRequest"
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiCategoryItem"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+  /admin/categories/{category}:
+    parameters:
+      - $ref: "#/components/parameters/CategoryId"
+    get:
+      tags: [Admin Categories]
+      summary: Get category
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiCategoryItem"
+    put:
+      tags: [Admin Categories]
+      summary: Update category
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CategoryWriteRequest"
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiCategoryItem"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+    patch:
+      tags: [Admin Categories]
+      summary: Partially update category
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CategoryWriteRequest"
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiCategoryItem"
+    delete:
+      tags: [Admin Categories]
+      summary: Delete category
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiStatusMessage"
+
+  /admin/products:
+    get:
+      tags: [Admin Products]
+      summary: List products
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiProductCollection"
+    post:
+      tags: [Admin Products]
+      summary: Create product
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/ProductWriteRequest"
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiProductItem"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /admin/products/{product}:
+    parameters:
+      - $ref: "#/components/parameters/ProductId"
+    get:
+      tags: [Admin Products]
+      summary: Get product
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiProductItem"
+    put:
+      tags: [Admin Products]
+      summary: Update product
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/ProductWriteRequest"
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiProductItem"
+    patch:
+      tags: [Admin Products]
+      summary: Partially update product
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/ProductWriteRequest"
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiProductItem"
+    delete:
+      tags: [Admin Products]
+      summary: Delete product
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiBoolean"
+
+  /admin/productUpdate/{product}:
+    post:
+      tags: [Admin Products]
+      summary: Legacy product update endpoint
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/ProductId"
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/ProductWriteRequest"
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiProductItem"
+
+  /admin/searchProduct:
+    get:
+      tags: [Admin Products]
+      summary: Search products
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/SearchQuery"
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiSearchProductsResponse"
+
+  /admin/slides:
+    get:
+      tags: [Admin Slides]
+      summary: List slides
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiSlideList"
+    post:
+      tags: [Admin Slides]
+      summary: Create slide
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [image]
+              properties:
+                image:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiSlideItem"
+
+  /admin/slides/{slide}:
+    parameters:
+      - $ref: "#/components/parameters/SlideId"
+    get:
+      tags: [Admin Slides]
+      summary: Get slide
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiSlideItem"
+    put:
+      tags: [Admin Slides]
+      summary: Update slide
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: false
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiSlideItem"
+    patch:
+      tags: [Admin Slides]
+      summary: Partially update slide
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: false
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiSlideItem"
+    delete:
+      tags: [Admin Slides]
+      summary: Delete slide
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiStatusMessage"
+
+  /admin/slideUpdate/{slide}:
+    post:
+      tags: [Admin Slides]
+      summary: Legacy slide update endpoint
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/SlideId"
+      requestBody:
+        required: false
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiSlideItem"
+
+  /admin/order/all:
+    get:
+      tags: [Admin Orders]
+      summary: List all orders
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiOrderList"
+
+  /admin/order/show/{order}:
+    get:
+      tags: [Admin Orders]
+      summary: Show order details
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/OrderId"
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiOrderItem"
+
+  /admin/order/update/{order}:
+    post:
+      tags: [Admin Orders]
+      summary: Update order status
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/OrderId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  example: accept
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiOrderRaw"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /info/dashboard:
+    get:
+      tags: [Public Info]
+      summary: Dashboard counters
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiDashboard"
+
+  /info/all-slides:
+    get:
+      tags: [Public Info]
+      summary: List all slides
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiSlideList"
+
+  /info/all-categories:
+    get:
+      tags: [Public Info]
+      summary: List all categories
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiCategoryList"
+
+  /info/category-products/{id}:
+    get:
+      tags: [Public Info]
+      summary: List products by category
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiSearchProductsResponse"
+
+  /info/all-products:
+    get:
+      tags: [Public Info]
+      summary: List all products
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiSearchProductsResponse"
+
+  /info/show-product/{slug}:
+    get:
+      tags: [Public Info]
+      summary: Get product by slug
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiProductItem"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /info/search-product:
+    get:
+      tags: [Public Info]
+      summary: Search products
+      parameters:
+        - $ref: "#/components/parameters/SearchQuery"
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiSearchProductsResponse"
+
+  /info/order-create:
+    post:
+      tags: [Public Info]
+      summary: Create a storefront order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderCreateRequest"
+      responses:
+        "200":
+          $ref: "#/components/responses/ApiOrderRaw"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /info/daily-order-delete:
+    get:
+      tags: [Public Info]
+      summary: Delete rejected orders and return deleted count
+      responses:
+        "200":
+          description: Deleted count
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiDeletedResponse"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Token
+
+  parameters:
+    CategoryId:
+      name: category
+      in: path
+      required: true
+      schema:
+        type: integer
+    ProductId:
+      name: product
+      in: path
+      required: true
+      schema:
+        type: integer
+    SlideId:
+      name: slide
+      in: path
+      required: true
+      schema:
+        type: integer
+    OrderId:
+      name: order
+      in: path
+      required: true
+      schema:
+        type: integer
+    SearchQuery:
+      name: search
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Search text. `q` is also accepted by backend.
+
+  responses:
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AuthErrorResponse"
+    ValidationError:
+      description: Validation failed
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ValidationErrorResponse"
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            type: object
+    ApiBoolean:
+      description: Wrapped boolean result
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiBooleanResponse"
+    ApiStatusMessage:
+      description: Wrapped message result
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiMessageResponse"
+    ApiCategoryList:
+      description: Wrapped category list
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiCategoryListResponse"
+    ApiCategoryItem:
+      description: Wrapped category item
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiCategoryItemResponse"
+    ApiProductCollection:
+      description: Product collection response
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: "#/components/schemas/ApiProductListResponse"
+              - $ref: "#/components/schemas/ApiSearchProductsResponse"
+    ApiProductItem:
+      description: Wrapped product item
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiProductItemResponse"
+    ApiSlideList:
+      description: Wrapped slides list
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiSlideListResponse"
+    ApiSlideItem:
+      description: Wrapped slide item
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiSlideItemResponse"
+    ApiOrderList:
+      description: Wrapped order list
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiOrderListResponse"
+    ApiOrderItem:
+      description: Wrapped order resource
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiOrderItemResponse"
+    ApiOrderRaw:
+      description: Wrapped raw order model
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiOrderRawResponse"
+    ApiDashboard:
+      description: Wrapped dashboard counters
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiDashboardResponse"
+    ApiSearchProductsResponse:
+      description: Wrapped search/list products response
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiSearchProductsResponse"
+
+  schemas:
+    User:
+      type: object
+      additionalProperties: true
+    AuthRegisterRequest:
+      type: object
+      required: [name, email, password]
+      properties:
+        name: { type: string, example: Xurshidbek }
+        email: { type: string, format: email, example: muminovxurshidbek@gmail.com }
+        password: { type: string, format: password, example: secret123 }
+    AuthLoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string, format: password }
+    AuthSuccessResponse:
+      type: object
+      properties:
+        status: { type: boolean, example: true }
+        message: { type: string, example: User Created Successfully }
+        token: { type: string }
+    AuthLoginSuccessResponse:
+      allOf:
+        - $ref: "#/components/schemas/AuthSuccessResponse"
+        - type: object
+          properties:
+            userr:
+              $ref: "#/components/schemas/User"
+    AuthErrorResponse:
+      type: object
+      properties:
+        status: { type: boolean, example: false }
+        message: { type: string }
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+    ValidationErrorResponse:
+      type: object
+      properties:
+        message: { type: string }
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+    Image:
+      type: object
+      properties:
+        id: { type: integer }
+        filename: { type: string }
+    Slide:
+      type: object
+      properties:
+        id: { type: integer }
+        image: { type: string, nullable: true }
+        title: { type: string, nullable: true }
+        description: { type: string, nullable: true }
+        link: { type: string, nullable: true }
+        is_active: { type: boolean, nullable: true }
+        sort_order: { type: integer, nullable: true }
+    Category:
+      type: object
+      properties:
+        id: { type: integer }
+        name_uz: { type: string, nullable: true }
+        name_ru: { type: string, nullable: true }
+        name_en: { type: string, nullable: true }
+    Product:
+      type: object
+      properties:
+        id: { type: integer }
+        name_uz: { type: string, nullable: true }
+        name_ru: { type: string, nullable: true }
+        name_en: { type: string, nullable: true }
+        slug: { type: string, nullable: true }
+        year: { type: integer, nullable: true }
+        breeder: { type: string, nullable: true }
+        latest: { type: string, nullable: true }
+        color: { type: string, nullable: true }
+        petal: { type: string, nullable: true }
+        height: { type: string, nullable: true }
+        smell: { type: string, nullable: true }
+        price: { type: number, nullable: true }
+        quantity: { type: integer, nullable: true }
+        yesorno: { type: string, nullable: true }
+        about: { type: string, nullable: true }
+        created_at: { type: string, format: date-time, nullable: true }
+        seo_title: { type: string, nullable: true }
+        seo_tag: { type: string, nullable: true }
+        seo_description: { type: string, nullable: true }
+        images:
+          type: array
+          items:
+            $ref: "#/components/schemas/Image"
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/Category"
+    OrderItem:
+      type: object
+      properties:
+        id: { type: integer }
+        order_id: { type: integer }
+        product_id: { type: integer }
+        product_name_uz: { type: string, nullable: true }
+        quantity: { type: integer }
+        total: { type: number }
+        created_at: { type: string, format: date-time, nullable: true }
+    Order:
+      type: object
+      properties:
+        id: { type: integer }
+        user_name: { type: string, nullable: true }
+        user_phone: { type: string, nullable: true }
+        user_email: { type: string, nullable: true }
+        user_address: { type: string, nullable: true }
+        street: { type: string, nullable: true }
+        home_number: { type: string, nullable: true }
+        postal_code: { type: string, nullable: true }
+        full_price: { type: number, nullable: true }
+        status: { type: string, nullable: true }
+        created_at: { type: string, format: date-time, nullable: true }
+        order_items:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderItem"
+    ProductWriteRequest:
+      type: object
+      properties:
+        name_uz: { type: string }
+        name_ru: { type: string }
+        name_en: { type: string }
+        slug: { type: string }
+        year: { type: number }
+        breeder: { type: string }
+        latest: { type: string }
+        color: { type: string }
+        petal: { type: string }
+        height: { type: string }
+        smell: { type: string }
+        price: { type: number }
+        quantity: { type: number }
+        yesorno: { type: string }
+        about: { type: string }
+        seo_title: { type: string }
+        seo_tag: { type: string }
+        seo_description: { type: string }
+        categories:
+          type: array
+          items:
+            type: integer
+        files:
+          type: array
+          items:
+            type: string
+            format: binary
+    CategoryWriteRequest:
+      type: object
+      required: [name_uz]
+      properties:
+        name_uz: { type: string }
+        name_ru: { type: string, nullable: true }
+        name_en: { type: string, nullable: true }
+    OrderCreateRequest:
+      type: object
+      required: [user_name, user_phone, user_address, products]
+      properties:
+        user_name: { type: string }
+        user_phone: { type: string }
+        user_email: { type: string, nullable: true }
+        user_address: { type: string }
+        street: { type: string, nullable: true }
+        home_number: { type: string, nullable: true }
+        postal_code: { type: string, nullable: true }
+        products:
+          type: array
+          items:
+            type: object
+            required: [product_id, quantity]
+            properties:
+              product_id: { type: integer }
+              quantity: { type: integer }
+    ApiBooleanResponse:
+      type: object
+      properties:
+        status: { type: boolean }
+        data: { type: boolean }
+    ApiMessageResponse:
+      type: object
+      properties:
+        status: { type: boolean }
+        data:
+          type: object
+          properties:
+            message: { type: string }
+    ApiCategoryListResponse:
+      type: object
+      properties:
+        status: { type: boolean }
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Category"
+    ApiCategoryItemResponse:
+      type: object
+      properties:
+        status: { type: boolean }
+        data:
+          $ref: "#/components/schemas/Category"
+    ApiProductListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Product"
+    ApiSearchProductsResponse:
+      type: object
+      properties:
+        status: { type: boolean }
+        data:
+          type: object
+          properties:
+            total: { type: integer }
+            products:
+              type: array
+              items:
+                $ref: "#/components/schemas/Product"
+    ApiProductItemResponse:
+      type: object
+      properties:
+        status: { type: boolean }
+        data:
+          $ref: "#/components/schemas/Product"
+    ApiSlideListResponse:
+      type: object
+      properties:
+        status: { type: boolean }
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Slide"
+    ApiSlideItemResponse:
+      type: object
+      properties:
+        status: { type: boolean }
+        data:
+          $ref: "#/components/schemas/Slide"
+    ApiOrderListResponse:
+      type: object
+      properties:
+        status: { type: boolean }
+        data:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+    ApiOrderItemResponse:
+      type: object
+      properties:
+        status: { type: boolean }
+        data:
+          $ref: "#/components/schemas/Order"
+    ApiOrderRawResponse:
+      type: object
+      properties:
+        status: { type: boolean }
+        data:
+          type: object
+          additionalProperties: true
+    ApiDashboardResponse:
+      type: object
+      properties:
+        status: { type: boolean }
+        data:
+          type: object
+          properties:
+            accepted_orders: { type: integer }
+            products_quantity: { type: integer }
+            full_price: { type: number }
+    ApiDeletedResponse:
+      type: object
+      properties:
+        status: { type: boolean }
+        data:
+          type: object
+          properties:
+            deleted: { type: integer }

@@ -6,7 +6,6 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SlideController;
 use App\Http\Controllers\Api\InfoController;
 use App\Http\Controllers\Auth\AuthController;
-use Illuminate\Support\Facades\Artisan ;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -34,15 +33,10 @@ Route::prefix('admin')->middleware('auth:sanctum')->group(function () {
         'slides' => SlideController::class,
     ]);
     Route::post('productUpdate/{product}', [ProductController::class, 'productUpdate']);
-    Route::post('slideUpdate/{slide}', [SlideController::class, 'slideUpdate']);
-    Route::get('searchProduct', [ProductController::class, 'search']);
+    Route::post('slideUpdate/{slide}', [SlideController::class, 'update']);
+    Route::get('searchProduct', [ProductController::class, 'searchProduct']);
+    Route::auto('order', OrderController::class);
 
 });
-Route::auto('admin/order', OrderController::class);
 
 Route::auto('/info', InfoController::class) ;
-
-Route::get('/artisan/{name}', function ($name) {
-    Artisan::call($name);
-    return 'OK';
-});

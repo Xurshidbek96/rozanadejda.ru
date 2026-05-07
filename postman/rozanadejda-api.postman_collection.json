@@ -1,0 +1,263 @@
+{
+  "info": {
+    "name": "Rozanadejda API",
+    "_postman_id": "f8fd0d46-1caa-4d3f-a9a2-53a0e51f1f77",
+    "description": "Full API collection generated from openapi.yaml",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost/api" },
+    { "key": "token", "value": "" },
+    { "key": "category_id", "value": "1" },
+    { "key": "product_id", "value": "1" },
+    { "key": "slide_id", "value": "1" },
+    { "key": "order_id", "value": "1" },
+    { "key": "slug", "value": "sample-product" },
+    { "key": "search", "value": "rose" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "auth": { "type": "noauth" },
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Xurshidbek\",\n  \"email\": \"muminovxurshidbek@gmail.com\",\n  \"password\": \"secret123\"\n}"
+            },
+            "url": "{{base_url}}/auth/register"
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const jsonData = pm.response.json();",
+                  "if (jsonData.token) { pm.collectionVariables.set('token', jsonData.token); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"muminovxurshidbek@gmail.com\",\n  \"password\": \"secret123\"\n}"
+            },
+            "url": "{{base_url}}/auth/login"
+          }
+        }
+      ]
+    },
+    {
+      "name": "User",
+      "item": [
+        {
+          "name": "Current User",
+          "request": { "method": "GET", "url": "{{base_url}}/user" }
+        }
+      ]
+    },
+    {
+      "name": "Admin Categories",
+      "item": [
+        { "name": "List Categories", "request": { "method": "GET", "url": "{{base_url}}/admin/categories" } },
+        {
+          "name": "Create Category",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name_uz\": \"Atirgul\",\n  \"name_ru\": \"Роза\",\n  \"name_en\": \"Rose\"\n}" },
+            "url": "{{base_url}}/admin/categories"
+          }
+        },
+        { "name": "Show Category", "request": { "method": "GET", "url": "{{base_url}}/admin/categories/{{category_id}}" } },
+        {
+          "name": "Update Category",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name_uz\": \"Yangilangan\",\n  \"name_ru\": \"Обновлено\",\n  \"name_en\": \"Updated\"\n}" },
+            "url": "{{base_url}}/admin/categories/{{category_id}}"
+          }
+        },
+        { "name": "Delete Category", "request": { "method": "DELETE", "url": "{{base_url}}/admin/categories/{{category_id}}" } }
+      ]
+    },
+    {
+      "name": "Admin Products",
+      "item": [
+        { "name": "List Products", "request": { "method": "GET", "url": "{{base_url}}/admin/products" } },
+        {
+          "name": "Create Product",
+          "request": {
+            "method": "POST",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "name_uz", "value": "Test Product", "type": "text" },
+                { "key": "slug", "value": "test-product", "type": "text" },
+                { "key": "price", "value": "100", "type": "text" },
+                { "key": "quantity", "value": "10", "type": "text" },
+                { "key": "categories[]", "value": "1", "type": "text" }
+              ]
+            },
+            "url": "{{base_url}}/admin/products"
+          }
+        },
+        { "name": "Show Product", "request": { "method": "GET", "url": "{{base_url}}/admin/products/{{product_id}}" } },
+        {
+          "name": "Update Product",
+          "request": {
+            "method": "PUT",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "name_uz", "value": "Updated Product", "type": "text" },
+                { "key": "price", "value": "120", "type": "text" }
+              ]
+            },
+            "url": "{{base_url}}/admin/products/{{product_id}}"
+          }
+        },
+        {
+          "name": "Legacy Product Update",
+          "request": {
+            "method": "POST",
+            "body": {
+              "mode": "formdata",
+              "formdata": [{ "key": "name_uz", "value": "Updated Product Legacy", "type": "text" }]
+            },
+            "url": "{{base_url}}/admin/productUpdate/{{product_id}}"
+          }
+        },
+        {
+          "name": "Search Product",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/admin/searchProduct?search={{search}}",
+              "host": ["{{base_url}}"],
+              "path": ["admin", "searchProduct"],
+              "query": [{ "key": "search", "value": "{{search}}" }]
+            }
+          }
+        },
+        { "name": "Delete Product", "request": { "method": "DELETE", "url": "{{base_url}}/admin/products/{{product_id}}" } }
+      ]
+    },
+    {
+      "name": "Admin Slides",
+      "item": [
+        { "name": "List Slides", "request": { "method": "GET", "url": "{{base_url}}/admin/slides" } },
+        {
+          "name": "Create Slide",
+          "request": {
+            "method": "POST",
+            "body": {
+              "mode": "formdata",
+              "formdata": [{ "key": "image", "type": "file", "src": "" }]
+            },
+            "url": "{{base_url}}/admin/slides"
+          }
+        },
+        { "name": "Show Slide", "request": { "method": "GET", "url": "{{base_url}}/admin/slides/{{slide_id}}" } },
+        {
+          "name": "Update Slide",
+          "request": {
+            "method": "PUT",
+            "body": {
+              "mode": "formdata",
+              "formdata": [{ "key": "image", "type": "file", "src": "" }]
+            },
+            "url": "{{base_url}}/admin/slides/{{slide_id}}"
+          }
+        },
+        {
+          "name": "Legacy Slide Update",
+          "request": {
+            "method": "POST",
+            "body": {
+              "mode": "formdata",
+              "formdata": [{ "key": "image", "type": "file", "src": "" }]
+            },
+            "url": "{{base_url}}/admin/slideUpdate/{{slide_id}}"
+          }
+        },
+        { "name": "Delete Slide", "request": { "method": "DELETE", "url": "{{base_url}}/admin/slides/{{slide_id}}" } }
+      ]
+    },
+    {
+      "name": "Admin Orders",
+      "item": [
+        { "name": "List Orders", "request": { "method": "GET", "url": "{{base_url}}/admin/order/all" } },
+        { "name": "Show Order", "request": { "method": "GET", "url": "{{base_url}}/admin/order/show/{{order_id}}" } },
+        {
+          "name": "Update Order Status",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"accept\"\n}" },
+            "url": "{{base_url}}/admin/order/update/{{order_id}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Public Info",
+      "auth": { "type": "noauth" },
+      "item": [
+        { "name": "Dashboard", "request": { "method": "GET", "url": "{{base_url}}/info/dashboard" } },
+        { "name": "All Slides", "request": { "method": "GET", "url": "{{base_url}}/info/all-slides" } },
+        { "name": "All Categories", "request": { "method": "GET", "url": "{{base_url}}/info/all-categories" } },
+        { "name": "Category Products", "request": { "method": "GET", "url": "{{base_url}}/info/category-products/{{category_id}}" } },
+        { "name": "All Products", "request": { "method": "GET", "url": "{{base_url}}/info/all-products" } },
+        { "name": "Show Product", "request": { "method": "GET", "url": "{{base_url}}/info/show-product/{{slug}}" } },
+        {
+          "name": "Search Product",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/info/search-product?search={{search}}",
+              "host": ["{{base_url}}"],
+              "path": ["info", "search-product"],
+              "query": [{ "key": "search", "value": "{{search}}" }]
+            }
+          }
+        },
+        {
+          "name": "Create Order",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_name\": \"Client\",\n  \"user_phone\": \"+998901112233\",\n  \"user_email\": \"client@example.com\",\n  \"user_address\": \"Tashkent\",\n  \"street\": \"Main\",\n  \"home_number\": \"12\",\n  \"postal_code\": \"100000\",\n  \"products\": [\n    { \"product_id\": 1, \"quantity\": 2 }\n  ]\n}"
+            },
+            "url": "{{base_url}}/info/order-create"
+          }
+        },
+        { "name": "Daily Order Delete", "request": { "method": "GET", "url": "{{base_url}}/info/daily-order-delete" } }
+      ]
+    }
+  ]
+}

@@ -12,12 +12,14 @@ class Order extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'status', 'total_amount', 'shipping_address',
-        'phone', 'email', 'notes'
+        'user_id', 'user_name', 'user_phone', 'user_email', 'user_address',
+        'street', 'home_number', 'postal_code', 'full_price', 'status',
+        'adminShow'
     ];
 
     protected $casts = [
-        'total_amount' => 'decimal:2',
+        'full_price' => 'decimal:2',
+        'adminShow' => 'boolean',
     ];
 
     /**

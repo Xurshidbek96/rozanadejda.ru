@@ -64,3 +64,30 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## API Docs
+
+Project API hujjatlari va test fayllari:
+
+- OpenAPI spec: `openapi.yaml`
+- Postman collection: `postman/rozanadejda-api.postman_collection.json`
+- Postman environment: `postman/rozanadejda-local.postman_environment.json`
+
+### Swagger/OpenAPI ishlatish
+
+1. `openapi.yaml` faylini [Swagger Editor](https://editor.swagger.io/) ga yuklang.
+2. `servers.url` ni kerakli hostga moslang (masalan, `http://localhost/api`).
+3. Himoyalangan endpointlar uchun `Authorize` orqali `Bearer <token>` bering.
+
+### Postman import
+
+1. Postman ichida **Import** ni bosing.
+2. `postman/rozanadejda-api.postman_collection.json` faylini tanlang.
+3. So‘ng `postman/rozanadejda-local.postman_environment.json` ni import qiling.
+4. Environment ni tanlab, `base_url` va `token` qiymatlarini to‘ldiring.
+
+### Token olish oqimi
+
+1. `Auth > Login` yoki `Auth > Register` request yuboring.
+2. `Login` requestida test script tokenni avtomatik ravishda `token` variable’iga saqlaydi.
+3. Keyin admin endpointlarni ishga tushiring (`/admin/*`).

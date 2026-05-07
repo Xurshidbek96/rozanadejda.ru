@@ -43,6 +43,11 @@ class ProductController extends Controller
         return $this->checkData($data);
     }
 
+    public function update(ProductUpdateRequest $request, Product $product)
+    {
+        return $this->productUpdate($request, $product);
+    }
+
     public function destroy(Product $product)
     {
         foreach ($product->images as $image) {
