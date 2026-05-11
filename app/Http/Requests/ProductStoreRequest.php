@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\UploadedFile;
 
 class ProductStoreRequest extends FormRequest
 {
@@ -12,6 +13,18 @@ class ProductStoreRequest extends FormRequest
     public function authorize(): bool
     {
         return true;
+    }
+
+    protected function prepareForValidation(): void
+    {
+        if (! $this->hasFile('files')) {
+            return;
+        }
+
+        $uploaded = $this->file('files');
+        if ($uploaded instanceof UploadedFile) {
+            $this->files->set('files', [$uploaded]);
+        }
     }
 
     /**
@@ -25,6 +38,12 @@ class ProductStoreRequest extends FormRequest
             'year' => 'numeric',
             'price' => 'numeric',
             'quantity' => 'numeric',
+            'files' => ['sometimes', 'array'],
+            'files.*' => [
+                'file',
+                'mimes:jpeg,jpg,png,gif,webp,mp4,webm,mov,avi',
+                'max:51200',
+            ],
         ];
     }
 }

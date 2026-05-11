@@ -813,6 +813,7 @@ components:
           items:
             type: integer
         files:
+          description: Optional media uploads — images (jpeg, png, webp get watermark), gif and video (mp4, webm, mov, avi) stored as-is.
           type: array
           items:
             type: string

@@ -5,10 +5,49 @@ namespace App\Http\Services;
 use App\Http\Resources\ProductResource;
 use App\Models\Image;
 use App\Models\Product;
+use Illuminate\Http\UploadedFile;
 use Intervention\Image\Facades\Image as ImageManager;
 
 class ProductAdminService
 {
+    /**
+     * Only these types get the PNG watermark (GIF animation and video stay untouched).
+     */
+    private function shouldApplyWatermark(UploadedFile $file): bool
+    {
+        $mime = strtolower((string) $file->getMimeType());
+
+        return in_array($mime, ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'], true);
+    }
+
+    private function storeUploadedMedia(UploadedFile $file, Product $product): void
+    {
+        $applyWatermark = $this->shouldApplyWatermark($file);
+        $safeBase = preg_replace('/[^a-zA-Z0-9._-]/', '_', $file->getClientOriginalName());
+        $filename = time() . '-' . uniqid('', true) . '-' . $safeBase;
+        $directory = public_path('images/products');
+        $filePath = $directory . '/' . $filename;
+
+        $file->move($directory, $filename);
+
+        if ($applyWatermark) {
+            $image = ImageManager::make($filePath);
+            $watermark = ImageManager::make(public_path('images/products/water.png'));
+            $watermarkSize = min($image->width() * 0.3, $image->height() * 0.3);
+            $watermark->resize($watermarkSize, $watermarkSize, function ($constraint) {
+                $constraint->aspectRatio();
+                $constraint->upsize();
+            });
+            $image->insert($watermark, 'bottom-right', 15, 15);
+            $image->save($filePath);
+        }
+
+        Image::create([
+            'product_id' => $product->id,
+            'filename' => $filename,
+        ]);
+    }
+
     public function getAllProducts()
     {
         $products = ProductResource::collection(Product::latest()->get());
@@ -31,36 +70,11 @@ class ProductAdminService
         
         if ($request->hasFile('files')) {
             $files = $request->file('files');
+            $files = is_array($files) ? $files : [$files];
             foreach ($files as $file) {
-                $filename = time() . '-' . $file->getClientOriginalName();
-                $filePath = public_path('images/products/' . $filename);
-
-                // Move the file to the public path
-                $file->move(public_path('images/products'), $filename);
-
-                // Open the file with Intervention Image
-                $image = ImageManager::make($filePath);
-
-                // Suv belgisini yuklaymiz
-                $watermark = ImageManager::make(public_path('images/products/water.png'));
-
-                // Suv belgisining o'lchamini asosiy rasmning o'lchamiga moslashtiramiz
-                $watermarkSize = min($image->width() * 0.3, $image->height() * 0.3); // Suv belgisining hajmi rasmning 10% bo'ladi
-                $watermark->resize($watermarkSize, $watermarkSize, function ($constraint) {
-                    $constraint->aspectRatio();
-                    $constraint->upsize();
-                });
-
-                // Suv belgisini asosiy rasmga qo'shamiz
-                $image->insert($watermark, 'bottom-right', 15, 15);
-
-                // Save the image with the watermark
-                $image->save($filePath);
-
-                $images[] = Image::create([
-                    'product_id' => $product->id,
-                    'filename' => $filename
-                ]);
+                if ($file instanceof UploadedFile && $file->isValid()) {
+                    $this->storeUploadedMedia($file, $product);
+                }
             }
         } else {
             $images = null;
@@ -85,7 +99,7 @@ class ProductAdminService
         // Rasmlarni yangilash
         if ($request->hasFile('files')) {
             $files = $request->file('files');
-            $images = [];
+            $files = is_array($files) ? $files : [$files];
             // Eskilarni o'chirish va ma'lumotlar bazasidan o'chirish
             $product->images->each(function ($image) {
                 $imagePath = public_path('images/products') . '/' . $image->filename;
@@ -97,35 +111,9 @@ class ProductAdminService
 
             // Yangi rasmlarni qo'shish
             foreach ($files as $file) {
-                $filename = time() . '-' . $file->getClientOriginalName();
-                $filePath = public_path('images/products/' . $filename);
-
-                // Move the file to the public path
-                $file->move(public_path('images/products'), $filename);
-
-                // Open the file with Intervention Image
-                $image = ImageManager::make($filePath);
-
-                // Suv belgisini yuklaymiz
-                $watermark = ImageManager::make(public_path('images/products/water.png'));
-
-                // Suv belgisining o'lchamini asosiy rasmning o'lchamiga moslashtiramiz
-                $watermarkSize = min($image->width() * 0.3, $image->height() * 0.3); // Suv belgisining hajmi rasmning 10% bo'ladi
-                $watermark->resize($watermarkSize, $watermarkSize, function ($constraint) {
-                    $constraint->aspectRatio();
-                    $constraint->upsize();
-                });
-
-                // Suv belgisini asosiy rasmga qo'shamiz
-                $image->insert($watermark, 'bottom-right', 15, 15);
-
-                // Save the image with the watermark
-                $image->save($filePath);
-
-                $images[] = Image::create([
-                    'product_id' => $product->id,
-                    'filename' => $filename
-                ]);
+                if ($file instanceof UploadedFile && $file->isValid()) {
+                    $this->storeUploadedMedia($file, $product);
+                }
             }
         }
         $product->load('images');
