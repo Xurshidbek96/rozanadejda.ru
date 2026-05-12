@@ -97,6 +97,16 @@ Swagger interfeysi **web** marshruti orqali beriladi (`/api` emas):
 3. So‘ng `postman/rozanadejda-local.postman_environment.json` ni import qiling.
 4. Environment ni tanlab, `base_url` va `token` qiymatlarini to‘ldiring.
 
+### MissingAppKeyException («No application encryption key»)
+
+Agar brauzerda shu xato chiqsa:
+
+1. Loyiha ildizida `.env` borligini tekshiring; yo‘q bo‘lsa: `cp .env.example .env`
+2. Kalit yarating: `php artisan key:generate`
+3. Eski config keshi bo‘lsa: `php artisan config:clear`
+
+`composer install` dan keyin `post-install-cmd` avtomatik ravishda `scripts/ensure-app-key.php` ishlaydi — `.env` bo‘lmasa nusxa oladi va bo‘sh `APP_KEY` bo‘lsa `key:generate` chaqiradi.
+
 ### Token olish oqimi
 
 1. `Auth > Login` yoki `Auth > Register` request yuboring.
