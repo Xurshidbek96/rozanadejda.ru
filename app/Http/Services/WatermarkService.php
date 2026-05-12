@@ -33,10 +33,23 @@ class WatermarkService
     }
 
     /**
-     * Persist a new watermark image (re-encoded as PNG for consistent alpha compositing).
+     * Remove the custom watermark file only (never deletes legacy images/products/water.png).
      */
-    public function storeCustomWatermark(UploadedFile $file): void
+    public function removeCustomWatermarkFile(): void
     {
+        $target = public_path(self::CUSTOM_RELATIVE);
+        if (is_file($target)) {
+            @unlink($target);
+        }
+    }
+
+    /**
+     * Replace custom watermark: delete previous file on disk first so nothing accumulates, then save PNG.
+     */
+    public function replaceCustomWatermark(UploadedFile $file): void
+    {
+        $this->removeCustomWatermarkFile();
+
         $directory = public_path('images/watermark');
         if (! is_dir($directory)) {
             mkdir($directory, 0755, true);

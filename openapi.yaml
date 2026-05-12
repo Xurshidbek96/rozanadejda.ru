@@ -286,7 +286,9 @@ paths:
     post:
       tags: [Admin Watermark]
       summary: Upload a new watermark image
-      description: Replaces `current.png`. Only affects **future** product image uploads (existing files are not reprocessed).
+      description: |
+        Saves as `public/images/watermark/current.png`. Any previous custom file is **deleted from disk** before writing so files do not accumulate.
+        Only affects **future** product image uploads.
       security:
         - bearerAuth: []
       requestBody:
@@ -312,6 +314,76 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "422":
           $ref: "#/components/responses/ValidationError"
+    put:
+      tags: [Admin Watermark]
+      summary: Replace watermark image (same as POST)
+      description: Removes existing custom watermark file from disk, then saves the new upload as `current.png`.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [image]
+              properties:
+                image:
+                  type: string
+                  format: binary
+                  description: JPEG, PNG, or WebP (max 5 MB)
+      responses:
+        "200":
+          description: Replace success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiWatermarkStoreWrapper"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+    patch:
+      tags: [Admin Watermark]
+      summary: Partial replace (same body as PUT — image required)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [image]
+              properties:
+                image:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiWatermarkStoreWrapper"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+    delete:
+      tags: [Admin Watermark]
+      summary: Delete custom watermark file from disk
+      description: Removes `public/images/watermark/current.png` only. Legacy `images/products/water.png` is never deleted.
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Delete result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiWatermarkDestroyWrapper"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
 
   /admin/slides:
     get:
@@ -1014,6 +1086,15 @@ components:
           type: object
           properties:
             url: { type: string }
+            message: { type: string }
+    ApiWatermarkDestroyWrapper:
+      type: object
+      properties:
+        status: { type: boolean }
+        data:
+          type: object
+          properties:
+            deleted: { type: boolean }
             message: { type: string }
     ApiDeletedResponse:
       type: object

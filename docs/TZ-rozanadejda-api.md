@@ -63,7 +63,7 @@ Bu bo‘lim **yangi qo‘shilgan** watermark funksionalligini to‘liq qamrab ol
 | Legacy (zaxira) | `images/products/water.png` | Custom yo‘q bo‘lsa, agar legacy fayl bo‘lsa, u ishlatiladi. |
 | Hech biri yo‘q | — | Mahsulot rasmi suv belgisiz saqlanadi (xatolik emas). |
 
-Yuklangan fayl serverda **PNG** ko‘rinishida `current.png` nomiga yoziladi (Intervention orqali — keyingi `insert` uchun bir xil format).
+Yuklangan fayl serverda **PNG** ko‘rinishida `current.png` nomiga yoziladi (Intervention orqali — keyingi `insert` uchun bir xil format). **Yangi yuklash yoki tahrirlash (PUT)** dan oldin avvalgi `current.png` diskdan o‘chiriladi — fayllar yig‘ilmaydi.
 
 ### 5.3 REST API (alohida endpointlar)
 
@@ -72,7 +72,9 @@ Barcha so‘rovlar: `Authorization: Bearer {token}`.
 | Metod | URL | Tavsif |
 |-------|-----|--------|
 | `GET` | `/api/admin/watermark` | Hozirgi effektiv watermark haqida ma’lumot: `configured`, `url`, `is_custom`, `updated_at` yoki `message`. |
-| `POST` | `/api/admin/watermark` | `multipart/form-data`, maydon nomi: **`image`**. Turlar: `jpeg, jpg, png, webp`, max **5120 KB**. Muvaffaqiyatda `current.png` yangilanadi. |
+| `POST` | `/api/admin/watermark` | `multipart/form-data`, maydon: **`image`**. Avvalgi custom fayl o‘chiriladi, keyin yangi `current.png` yoziladi. |
+| `PUT` / `PATCH` | `/api/admin/watermark` | POST bilan bir xil — almashtirish (eski fayl diskdan olib tashlanadi). |
+| `DELETE` | `/api/admin/watermark` | Faqat `public/images/watermark/current.png` ni o‘chiradi; **legacy** `images/products/water.png` tegilmaydi. |
 
 **Muhim:** watermark yangilangandan keyin allaqachon yuklangan mahsulot fayllari **qayta ishlanmaydi** — faqat keyingi yuklamalar yangi suv belgisidan foydalanadi.
 
@@ -90,7 +92,7 @@ Barcha so‘rovlar: `Authorization: Bearer {token}`.
 ### 5.6 Texnik implementatsiya (kod nuqtai nazaridan)
 
 - `App\Http\Services\WatermarkService` — fayl yo‘lini aniqlash, custom saqlash.
-- `App\Http\Controllers\Admin\WatermarkController` — `show`, `store`.
+- `App\Http\Controllers\Admin\WatermarkController` — `show`, `store`, `update`, `destroy`.
 - `App\Http\Services\ProductAdminService` — `storeUploadedMedia` ichida `WatermarkService::resolveWatermarkAbsolutePath()` chaqiruvi.
 
 ---
@@ -118,7 +120,7 @@ Barcha so‘rovlar: `Authorization: Bearer {token}`.
 
 - Kolleksiya: `postman/rozanadejda-api.postman_collection.json`
 - Muhit: `postman/rozanadejda-local.postman_environment.json`
-- `Admin Watermark` papkasi: `GET/POST .../admin/watermark`
+- `Admin Watermark` papkasi: `GET`, `POST`, `PUT`, `DELETE` ... `/admin/watermark`
 
 ---
 

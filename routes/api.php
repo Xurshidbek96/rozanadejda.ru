@@ -38,6 +38,9 @@ Route::prefix('admin')->middleware('auth:sanctum')->group(function () {
     Route::get('searchProduct', [ProductController::class, 'searchProduct']);
     Route::get('watermark', [WatermarkController::class, 'show']);
     Route::post('watermark', [WatermarkController::class, 'store']);
+    Route::put('watermark', [WatermarkController::class, 'update']);
+    Route::patch('watermark', [WatermarkController::class, 'update']);
+    Route::delete('watermark', [WatermarkController::class, 'destroy']);
     Route::auto('order', OrderController::class);
 
 });

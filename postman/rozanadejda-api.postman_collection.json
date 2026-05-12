@@ -179,7 +179,19 @@
             },
             "url": "{{base_url}}/admin/watermark"
           }
-        }
+        },
+        {
+          "name": "Update Watermark (PUT)",
+          "request": {
+            "method": "PUT",
+            "body": {
+              "mode": "formdata",
+              "formdata": [{ "key": "image", "type": "file", "src": "" }]
+            },
+            "url": "{{base_url}}/admin/watermark"
+          }
+        },
+        { "name": "Delete Watermark", "request": { "method": "DELETE", "url": "{{base_url}}/admin/watermark" } }
       ]
     },
     {
