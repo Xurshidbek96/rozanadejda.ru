@@ -166,6 +166,23 @@
       ]
     },
     {
+      "name": "Admin Watermark",
+      "item": [
+        { "name": "Get Watermark", "request": { "method": "GET", "url": "{{base_url}}/admin/watermark" } },
+        {
+          "name": "Upload Watermark",
+          "request": {
+            "method": "POST",
+            "body": {
+              "mode": "formdata",
+              "formdata": [{ "key": "image", "type": "file", "src": "" }]
+            },
+            "url": "{{base_url}}/admin/watermark"
+          }
+        }
+      ]
+    },
+    {
       "name": "Admin Slides",
       "item": [
         { "name": "List Slides", "request": { "method": "GET", "url": "{{base_url}}/admin/slides" } },

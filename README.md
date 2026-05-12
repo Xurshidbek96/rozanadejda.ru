@@ -69,15 +69,26 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 
 Project API hujjatlari va test fayllari:
 
-- OpenAPI spec: `openapi.yaml`
+- OpenAPI spec: `openapi.yaml` (ildizda)
 - Postman collection: `postman/rozanadejda-api.postman_collection.json`
 - Postman environment: `postman/rozanadejda-local.postman_environment.json`
+- **To‘liq texnik topshiriq (TZ):** `docs/TZ-rozanadejda-api.md` (shu jumladan **dinamik watermark** bo‘limi alohida)
 
-### Swagger/OpenAPI ishlatish
+### Swagger UI — qaysi URL?
 
-1. `openapi.yaml` faylini [Swagger Editor](https://editor.swagger.io/) ga yuklang.
-2. `servers.url` ni kerakli hostga moslang (masalan, `http://localhost/api`).
-3. Himoyalangan endpointlar uchun `Authorize` orqali `Bearer <token>` bering.
+Swagger interfeysi **web** marshruti orqali beriladi (`/api` emas):
+
+| Resurs | Manzil |
+|--------|--------|
+| **Swagger UI** | `{APP_URL}/docs` — masalan `http://localhost/docs` yoki MAMP uchun `http://localhost:8888/docs` |
+| **OpenAPI YAML** | `{APP_URL}/docs/openapi.yaml` |
+
+`.env` dagi `APP_URL` qaysi host/port bo‘lsa, `/docs` shu domen ostida ochiladi.
+
+### Swagger/OpenAPI (tashqi editor)
+
+1. `openapi.yaml` faylini [Swagger Editor](https://editor.swagger.io/) ga yuklash mumkin.
+2. `servers.url` ni kerakli API bazasiga moslang (masalan, `http://localhost:8888/api`).
 
 ### Postman import
 

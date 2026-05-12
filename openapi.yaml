@@ -5,6 +5,9 @@ info:
   description: |
     Canonical API specification for the Laravel backend.
     Base prefix is `/api`.
+
+    **Swagger UI (to‘liq vizual hujjat):** `{APP_URL}/docs` — brauzerda ochiladi; spec manbasi `{APP_URL}/docs/openapi.yaml`.
+    Masalan, lokal: `http://localhost/docs` (MAMP port bilan: `http://localhost:8888/docs`).
 servers:
   - url: http://localhost/api
     description: Local
@@ -15,6 +18,7 @@ tags:
   - name: Admin Products
   - name: Admin Slides
   - name: Admin Orders
+  - name: Admin Watermark
   - name: Public Info
 paths:
   /user:
@@ -260,6 +264,54 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/ApiSearchProductsResponse"
+
+  /admin/watermark:
+    get:
+      tags: [Admin Watermark]
+      summary: Get active watermark URL and metadata
+      description: |
+        Returns the file currently used when applying a watermark to new JPEG/PNG/WebP product uploads.
+        Custom upload is stored at `public/images/watermark/current.png`; if missing, legacy `images/products/water.png` is used.
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Watermark metadata
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiWatermarkShowWrapper"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+    post:
+      tags: [Admin Watermark]
+      summary: Upload a new watermark image
+      description: Replaces `current.png`. Only affects **future** product image uploads (existing files are not reprocessed).
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [image]
+              properties:
+                image:
+                  type: string
+                  format: binary
+                  description: JPEG, PNG, or WebP (max 5 MB)
+      responses:
+        "200":
+          description: Upload success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiWatermarkStoreWrapper"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "422":
+          $ref: "#/components/responses/ValidationError"
 
   /admin/slides:
     get:
@@ -942,6 +994,27 @@ components:
             accepted_orders: { type: integer }
             products_quantity: { type: integer }
             full_price: { type: number }
+    ApiWatermarkShowWrapper:
+      type: object
+      properties:
+        status: { type: boolean }
+        data:
+          type: object
+          properties:
+            configured: { type: boolean }
+            url: { type: string, nullable: true }
+            is_custom: { type: boolean }
+            updated_at: { type: string, format: date-time, nullable: true }
+            message: { type: string, nullable: true }
+    ApiWatermarkStoreWrapper:
+      type: object
+      properties:
+        status: { type: boolean }
+        data:
+          type: object
+          properties:
+            url: { type: string }
+            message: { type: string }
     ApiDeletedResponse:
       type: object
       properties:

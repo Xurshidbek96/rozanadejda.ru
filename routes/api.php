@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SlideController;
+use App\Http\Controllers\Admin\WatermarkController;
 use App\Http\Controllers\Api\InfoController;
 use App\Http\Controllers\Auth\AuthController;
 use Illuminate\Http\Request;
@@ -35,6 +36,8 @@ Route::prefix('admin')->middleware('auth:sanctum')->group(function () {
     Route::post('productUpdate/{product}', [ProductController::class, 'productUpdate']);
     Route::post('slideUpdate/{slide}', [SlideController::class, 'update']);
     Route::get('searchProduct', [ProductController::class, 'searchProduct']);
+    Route::get('watermark', [WatermarkController::class, 'show']);
+    Route::post('watermark', [WatermarkController::class, 'store']);
     Route::auto('order', OrderController::class);
 
 });

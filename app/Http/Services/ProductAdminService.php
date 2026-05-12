@@ -10,6 +10,10 @@ use Intervention\Image\Facades\Image as ImageManager;
 
 class ProductAdminService
 {
+    public function __construct(
+        private readonly WatermarkService $watermarkService
+    ) {}
+
     /**
      * Only these types get the PNG watermark (GIF animation and video stay untouched).
      */
@@ -31,15 +35,18 @@ class ProductAdminService
         $file->move($directory, $filename);
 
         if ($applyWatermark) {
-            $image = ImageManager::make($filePath);
-            $watermark = ImageManager::make(public_path('images/products/water.png'));
-            $watermarkSize = min($image->width() * 0.3, $image->height() * 0.3);
-            $watermark->resize($watermarkSize, $watermarkSize, function ($constraint) {
-                $constraint->aspectRatio();
-                $constraint->upsize();
-            });
-            $image->insert($watermark, 'bottom-right', 15, 15);
-            $image->save($filePath);
+            $watermarkPath = $this->watermarkService->resolveWatermarkAbsolutePath();
+            if ($watermarkPath !== null) {
+                $image = ImageManager::make($filePath);
+                $watermark = ImageManager::make($watermarkPath);
+                $watermarkSize = min($image->width() * 0.3, $image->height() * 0.3);
+                $watermark->resize($watermarkSize, $watermarkSize, function ($constraint) {
+                    $constraint->aspectRatio();
+                    $constraint->upsize();
+                });
+                $image->insert($watermark, 'bottom-right', 15, 15);
+                $image->save($filePath);
+            }
         }
 
         Image::create([
