@@ -12,7 +12,6 @@ return new class extends Migration
      */
     public function up(): void
     {
-        
         Schema::table('images', function (Blueprint $table) {
             $table->unsignedInteger('sort_order')->default(0)->after('filename');
             $table->string('media_type', 20)->default('image')->after('sort_order');
