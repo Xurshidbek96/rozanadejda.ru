@@ -33,11 +33,11 @@ class Product extends Model
     }
 
     /**
-     * Get the images for the product
+     * Product media files (images / GIF / video), ordered for display.
      */
     public function images(): HasMany
     {
-        return $this->hasMany(Image::class);
+        return $this->hasMany(Image::class)->orderBy('sort_order');
     }
 
     /**

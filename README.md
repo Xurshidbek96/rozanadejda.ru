@@ -126,3 +126,7 @@ Agar yangi API marshrutlari `route:list` da ko‘rinmasa: `php artisan route:cle
 1. `Auth > Login` yoki `Auth > Register` request yuboring.
 2. `Login` requestidagi test script `token` o‘zgaruvchisiga yozadi.
 3. Admin so‘rovlar: `GET/POST/PUT/PATCH/DELETE .../admin/*` (jumladan **watermark** — `openapi.yaml` va TZ bo‘lim 5).
+
+### Mahsulot media tartibi (Front / User UI)
+
+`openapi.yaml` **v1.2.0**: mahsulot `images` elementlarida `url`, `media_type` (`image`, `gif`, `video`), `sort_order` — admin `files` yuborgan **ketma-ketlik** bilan mos. Front massivni tartib bo‘yicha chiqaradi: rasm/gif uchun `<img>`, video uchun `<video controls>`. Batafsil: [docs/TZ-rozanadejda-api.md](docs/TZ-rozanadejda-api.md) → §4.

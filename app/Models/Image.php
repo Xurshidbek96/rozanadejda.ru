@@ -11,11 +11,12 @@ class Image extends Model
     use HasFactory;
 
     protected $fillable = [
-        'product_id', 'filename', 'alt_text', 'is_primary'
+        'product_id', 'filename', 'sort_order', 'media_type', 'alt_text', 'is_primary',
     ];
 
     protected $casts = [
         'is_primary' => 'boolean',
+        'sort_order' => 'integer',
     ];
 
     /**
@@ -35,7 +36,7 @@ class Image extends Model
     }
 
     /**
-     * Get the full URL of the image
+     * Public URL for this media file (image, gif, or video under images/products).
      */
     public function getUrlAttribute()
     {

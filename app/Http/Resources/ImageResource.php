@@ -17,6 +17,9 @@ class ImageResource extends JsonResource
         return [
             'id' => $this->id,
             'filename' => $this->filename,
+            'url' => $this->url,
+            'media_type' => $this->media_type,
+            'sort_order' => $this->sort_order,
         ];
     }
 }

@@ -24,7 +24,22 @@ class ProductAdminService
         return in_array($mime, ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'], true);
     }
 
-    private function storeUploadedMedia(UploadedFile $file, Product $product): void
+    private function detectMediaType(UploadedFile $file): string
+    {
+        $mime = strtolower((string) $file->getMimeType());
+
+        if (str_starts_with($mime, 'video/')) {
+            return 'video';
+        }
+
+        if ($mime === 'image/gif') {
+            return 'gif';
+        }
+
+        return 'image';
+    }
+
+    private function storeUploadedMedia(UploadedFile $file, Product $product, int $sortOrder): void
     {
         $applyWatermark = $this->shouldApplyWatermark($file);
         $safeBase = preg_replace('/[^a-zA-Z0-9._-]/', '_', $file->getClientOriginalName());
@@ -52,6 +67,8 @@ class ProductAdminService
         Image::create([
             'product_id' => $product->id,
             'filename' => $filename,
+            'sort_order' => $sortOrder,
+            'media_type' => $this->detectMediaType($file),
         ]);
     }
 
@@ -78,9 +95,10 @@ class ProductAdminService
         if ($request->hasFile('files')) {
             $files = $request->file('files');
             $files = is_array($files) ? $files : [$files];
+            $order = 0;
             foreach ($files as $file) {
                 if ($file instanceof UploadedFile && $file->isValid()) {
-                    $this->storeUploadedMedia($file, $product);
+                    $this->storeUploadedMedia($file, $product, $order++);
                 }
             }
         } else {
@@ -117,9 +135,10 @@ class ProductAdminService
             });
 
             // Yangi rasmlarni qo'shish
+            $order = 0;
             foreach ($files as $file) {
                 if ($file instanceof UploadedFile && $file->isValid()) {
-                    $this->storeUploadedMedia($file, $product);
+                    $this->storeUploadedMedia($file, $product, $order++);
                 }
             }
         }

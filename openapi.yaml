@@ -1,14 +1,16 @@
 openapi: 3.0.3
 info:
   title: Rozanadejda API
-  version: 1.1.0
+  version: 1.2.0
   description: |
     Canonical API specification for the Laravel backend.
     Base prefix is `/api`.
 
     **Swagger UI:** `{APP_URL}/docs` — brauzerda; spec: `{APP_URL}/docs/openapi.yaml`.
 
-    **v1.1.0 (oxirgi):** admin watermark `GET/POST/PUT/PATCH/DELETE /api/admin/watermark` (almashtirishda eski `current.png` diskdan o‘chadi);
+    **v1.2.0:** mahsulot `images` — `sort_order`, `media_type` (`image`|`gif`|`video`), `url`; admin yuklagan fayllar ketma-ketligi API javobida saqlanadi.
+
+    **v1.1.0:** admin watermark `GET/POST/PUT/PATCH/DELETE /api/admin/watermark` (almashtirishda eski `current.png` diskdan o‘chadi);
     mahsulot `files` uchun ixtiyoriy gif/video MIME; dinamik watermark mahsulot JPEG/PNG/WebP ga qo‘llanadi.
 
     **v1.0.0:** Sanctum, admin CRUD, buyurtmalar, public `info/*`, Postman kolleksiyasi bilan mos.
@@ -836,9 +838,20 @@ components:
               type: string
     Image:
       type: object
+      description: |
+        Mahsulot media elementi. `images` massivi `sort_order` bo‘yicha tartiblangan (admin yuklagan ketma-ketlik).
+        Front: `media_type` bo‘yicha — `image`/`gif` uchun `<img src="url">`, `video` uchun `<video src="url" controls>`.
       properties:
         id: { type: integer }
         filename: { type: string }
+        url: { type: string, format: uri }
+        media_type:
+          type: string
+          enum: [image, gif, video]
+          description: MIME asosida aniqlangan tur
+        sort_order:
+          type: integer
+          description: 0 dan boshlab ko‘rsatish tartibi
     Slide:
       type: object
       properties:

@@ -1,6 +1,6 @@
 # Texnik topshiriq (TZ) — Rozanadejda.ru backend API
 
-Hujjat loyihaning REST API, admin oqimi, mahsulot media va **dinamik watermark** modulini qamrab oladi. Swagger UI manzili va OpenAPI manbasi alohida ko‘rsatilgan. **Hujjat versiyasi:** `openapi.yaml` → `info.version` (joriy: **1.1.0**).
+Hujjat loyihaning REST API, admin oqimi, mahsulot media va **dinamik watermark** modulini qamrab oladi. Swagger UI manzili va OpenAPI manbasi alohida ko‘rsatilgan. **Hujjat versiyasi:** `openapi.yaml` → `info.version` (joriy: **1.2.0**).
 
 ---
 
@@ -45,6 +45,14 @@ Batafsil kontrakt: repodagi `openapi.yaml`.
 - **Hajm:** har bir fayl uchun taxminan **50 MB** chegara (`ProductStoreRequest` / `ProductUpdateRequest` — `max:51200` KB); server `upload_max_filesize` / `post_max_size` bilan ham mos bo‘lishi kerak.
 - **Suv belgisi:** faqat statik rasm formatlarida (`jpeg`, `png`, `webp`) qo‘llanadi; **GIF** va **video** o‘zgartirilmasdan saqlanadi.
 - **Suv belgisi manbasi:** bo‘lim 5 bo‘yicha dinamik fayl (`WatermarkService`).
+- **Tartib:** `multipart/form-data` dagi `files[]` yuborilish ketma-ketligi `sort_order` (0, 1, 2, …) sifatida `images` jadvaliga yoziladi. API javobidagi `images` massivi shu tartibda qaytadi — front shu ketma-ketlikda chiqaradi.
+
+### 4.1 Front-end (User UI) uchun
+
+- `GET /api/info/show-product/{slug}` va mahsulot obyektidagi `images` — tartiblangan ro‘yxat.
+- Har bir element: `url`, `media_type` (`image` \| `gif` \| `video`), `sort_order`.
+- Render: `image` va `gif` → `<img src="{{ url }}" alt="" loading="lazy" />`; `video` → `<video src="{{ url }}" controls playsinline></video>`.
+- Admin forma `files` maydonini **bir xil tartibda** yuborsin (odatda input `multiple` yoki ketma-ket tanlangan fayllar tartibi).
 
 ---
 
@@ -132,13 +140,13 @@ Barcha so‘rovlar: `Authorization: Bearer {token}`.
 - Watermark uchun alohida DB jadvali **talab qilinmaydi** (fayl tizimi).
 - `public/images/watermark/` katalogi repoda `.gitkeep` bilan saqlanadi.
 - Katta fayllar uchun PHP `upload_max_filesize` / `post_max_size` sozlamalari serverda mos bo‘lishi kerak.
-- Yangi kod tortilgach: `composer install`, `php artisan migrate`, kerak bo‘lsa `php artisan config:clear` va `php artisan route:clear` (yoki productionda `config:cache` / `route:cache` ni qayta yig‘ish).
+- Yangi kod tortilgach: `composer install`, **`php artisan migrate`** (mahsulot `images` uchun `sort_order`, `media_type` ustunlari), kerak bo‘lsa `php artisan config:clear` va `php artisan route:clear` (yoki productionda `config:cache` / `route:cache` ni qayta yig‘ish).
 
 ---
 
 ## 9. Versiya va hujjatlar sinxroni
 
-- API kontrakti manbai: repoda [openapi.yaml](../openapi.yaml) — `info.version` (joriy **1.1.0**).
+- API kontrakti manbai: repoda [openapi.yaml](../openapi.yaml) — `info.version` (joriy **1.2.0**).
 - Ushbu TZ, [README.md](../README.md) API bo‘limi va Postman kolleksiyasi shu versiya bilan **sinxron** saqlanishi tavsiya etiladi.
 
 ---
