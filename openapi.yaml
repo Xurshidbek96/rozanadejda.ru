@@ -1,13 +1,17 @@
 openapi: 3.0.3
 info:
   title: Rozanadejda API
-  version: 1.0.0
+  version: 1.1.0
   description: |
     Canonical API specification for the Laravel backend.
     Base prefix is `/api`.
 
-    **Swagger UI (to‘liq vizual hujjat):** `{APP_URL}/docs` — brauzerda ochiladi; spec manbasi `{APP_URL}/docs/openapi.yaml`.
-    Masalan, lokal: `http://localhost/docs` (MAMP port bilan: `http://localhost:8888/docs`).
+    **Swagger UI:** `{APP_URL}/docs` — brauzerda; spec: `{APP_URL}/docs/openapi.yaml`.
+
+    **v1.1.0 (oxirgi):** admin watermark `GET/POST/PUT/PATCH/DELETE /api/admin/watermark` (almashtirishda eski `current.png` diskdan o‘chadi);
+    mahsulot `files` uchun ixtiyoriy gif/video MIME; dinamik watermark mahsulot JPEG/PNG/WebP ga qo‘llanadi.
+
+    **v1.0.0:** Sanctum, admin CRUD, buyurtmalar, public `info/*`, Postman kolleksiyasi bilan mos.
 servers:
   - url: http://localhost/api
     description: Local

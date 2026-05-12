@@ -1,6 +1,6 @@
 # Texnik topshiriq (TZ) — Rozanadejda.ru backend API
 
-Hujjat loyihaning REST API, admin oqimi, mahsulot media va **dinamik watermark** modulini qamrab oladi. Swagger UI manzili va OpenAPI manbasi alohida ko‘rsatilgan.
+Hujjat loyihaning REST API, admin oqimi, mahsulot media va **dinamik watermark** modulini qamrab oladi. Swagger UI manzili va OpenAPI manbasi alohida ko‘rsatilgan. **Hujjat versiyasi:** `openapi.yaml` → `info.version` (joriy: **1.1.0**).
 
 ---
 
@@ -30,6 +30,7 @@ Admin guruh (`/api/admin/*` asosiy CRUD, buyurtmalar, **watermark**) — `auth:s
 |-------|--------|---------|
 | Auth | `/api/auth/*` | Auto-route; amalda POST ishlatiladi. |
 | Admin CRUD | `/api/admin/categories`, `products`, `slides` | REST + maxsus `productUpdate`, `slideUpdate`, `searchProduct`. |
+| Admin watermark | `/api/admin/watermark` | `GET`, `POST`, `PUT`, `PATCH`, `DELETE` — barchasi `auth:sanctum`. |
 | Admin orders | `/api/admin/order/*` | Ro‘yxat, ko‘rish, status yangilash. |
 | Public info | `/api/info/*` | Do‘kon: kategoriyalar, mahsulotlar, qidiruv, buyurtma yaratish. |
 
@@ -39,10 +40,11 @@ Batafsil kontrakt: repodagi `openapi.yaml`.
 
 ## 4. Mahsulot media (rasmlar, GIF, video)
 
-- **Maydon:** `files` — ixtiyoriy massiv (yoki bitta fayl).
-- **Ruxsat etilgan turlar:** `jpeg, jpg, png, gif, webp, mp4, webm, mov, avi` (hajm cheklovi FormRequestda).
+- **Maydon:** `files` — ixtiyoriy massiv (yoki bitta fayl; FormRequest `prepareForValidation` bitta faylni massivga aylantiradi).
+- **Ruxsat etilgan turlar:** `jpeg, jpg, png, gif, webp, mp4, webm, mov, avi`.
+- **Hajm:** har bir fayl uchun taxminan **50 MB** chegara (`ProductStoreRequest` / `ProductUpdateRequest` — `max:51200` KB); server `upload_max_filesize` / `post_max_size` bilan ham mos bo‘lishi kerak.
 - **Suv belgisi:** faqat statik rasm formatlarida (`jpeg`, `png`, `webp`) qo‘llanadi; **GIF** va **video** o‘zgartirilmasdan saqlanadi.
-- **Suv belgisi manbasi:** quyidagi bo‘lim 5 bo‘yicha dinamik fayl.
+- **Suv belgisi manbasi:** bo‘lim 5 bo‘yicha dinamik fayl (`WatermarkService`).
 
 ---
 
@@ -91,9 +93,9 @@ Barcha so‘rovlar: `Authorization: Bearer {token}`.
 
 ### 5.6 Texnik implementatsiya (kod nuqtai nazaridan)
 
-- `App\Http\Services\WatermarkService` — fayl yo‘lini aniqlash, custom saqlash.
-- `App\Http\Controllers\Admin\WatermarkController` — `show`, `store`, `update`, `destroy`.
-- `App\Http\Services\ProductAdminService` — `storeUploadedMedia` ichida `WatermarkService::resolveWatermarkAbsolutePath()` chaqiruvi.
+- `App\Http\Services\WatermarkService` — `resolveWatermarkAbsolutePath()`, `hasCustomWatermark()`, `removeCustomWatermarkFile()`, `replaceCustomWatermark()`, `customWatermarkPublicUrl()`.
+- `App\Http\Controllers\Admin\WatermarkController` — `show`, `store`, `update`, `destroy` (+ `validatedWatermarkUpload`).
+- `App\Http\Services\ProductAdminService` — `storeUploadedMedia` ichida `WatermarkService::resolveWatermarkAbsolutePath()`; watermark faqat mos MIME uchun `Intervention\Image` orqali qo‘llanadi.
 
 ---
 
@@ -120,7 +122,8 @@ Barcha so‘rovlar: `Authorization: Bearer {token}`.
 
 - Kolleksiya: `postman/rozanadejda-api.postman_collection.json`
 - Muhit: `postman/rozanadejda-local.postman_environment.json`
-- `Admin Watermark` papkasi: `GET`, `POST`, `PUT`, `DELETE` ... `/admin/watermark`
+- O‘zgaruvchilar: `base_url` — API (`…/api`); **`web_base_url`** — Swagger UI uchun ilova ildizi (`…/docs` ochishda, `/api` siz); `token`, id lar.
+- `Admin Watermark` papkasi: `GET`, `POST`, `PUT (Update)`, `DELETE` — `/admin/watermark`
 
 ---
 
@@ -129,9 +132,40 @@ Barcha so‘rovlar: `Authorization: Bearer {token}`.
 - Watermark uchun alohida DB jadvali **talab qilinmaydi** (fayl tizimi).
 - `public/images/watermark/` katalogi repoda `.gitkeep` bilan saqlanadi.
 - Katta fayllar uchun PHP `upload_max_filesize` / `post_max_size` sozlamalari serverda mos bo‘lishi kerak.
+- Yangi kod tortilgach: `composer install`, `php artisan migrate`, kerak bo‘lsa `php artisan config:clear` va `php artisan route:clear` (yoki productionda `config:cache` / `route:cache` ni qayta yig‘ish).
 
 ---
 
-## 9. Versiya
+## 9. Versiya va hujjatlar sinxroni
 
-- Hujjat va watermark API: loyiha reposi bilan birga yangilanadi; aniq versiya `openapi.yaml` → `info.version` maydonida.
+- API kontrakti manbai: repoda [openapi.yaml](../openapi.yaml) — `info.version` (joriy **1.1.0**).
+- Ushbu TZ, [README.md](../README.md) API bo‘limi va Postman kolleksiyasi shu versiya bilan **sinxron** saqlanishi tavsiya etiladi.
+
+---
+
+## 10. Dev muhit: tez-tez uchraydigan xatolar
+
+| Xato / holat | Yechim |
+|--------------|--------|
+| `MissingAppKeyException` | `.env` + `php artisan key:generate`; yoki `composer install` (`scripts/ensure-app-key.php`). Keyin `php artisan config:clear`. |
+| `Class "Route" not found` (masalan `welcome.blade.php`) | `config/app.php` da `Facade::defaultAliases()` ishlatilgan bo‘lishi kerak; `php artisan config:clear`. |
+| Yangi `api/...` marshrutlari ko‘rinmaydi | `php artisan route:clear` yoki `route:cache` ni qayta ishlatish. |
+| Swagger `/docs` ochilmaydi | `routes/web.php` da `/docs` va `/docs/openapi.yaml`; `APP_URL` to‘g‘ri host. |
+
+---
+
+## 11. Marshrutlarni tekshirish
+
+Lokalda barcha API marshrutlari:
+
+```bash
+php artisan route:list --path=api
+```
+
+Watermark alohida:
+
+```bash
+php artisan route:list --path=watermark
+```
+
+Kutiladi: `GET|POST|PUT|PATCH|DELETE api/admin/watermark`.

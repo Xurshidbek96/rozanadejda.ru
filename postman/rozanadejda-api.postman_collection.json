@@ -2,7 +2,7 @@
   "info": {
     "name": "Rozanadejda API",
     "_postman_id": "f8fd0d46-1caa-4d3f-a9a2-53a0e51f1f77",
-    "description": "Full API collection generated from openapi.yaml",
+    "description": "OpenAPI 1.1.0 bilan mos kolleksiya.\n\n- Auth, User, Admin (categories, products, slides, orders), watermark (GET/POST/PUT/PATCH/DELETE), Public info\n- Mahsulot: multipart files (rasm + ixtiyoriy gif/video)\n- Watermark: yangi yuklashda eski current.png o‘chadi; DELETE custom faylni diskdan olib tashlaydi\n\nMuhit: `base_url` = API (…/api). Swagger uchun brauzerda `{{web_base_url}}/docs` (environmentda `web_base_url`, odatda APP_URL).",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "auth": {

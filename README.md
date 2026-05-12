@@ -67,48 +67,62 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 
 ## API Docs
 
-Project API hujjatlari va test fayllari:
+Quyidagi fayllar **bir-biriga mos** saqlanadi: `openapi.yaml` (manba), Postman, TZ va README.
 
-- OpenAPI spec: `openapi.yaml` (ildizda)
-- Postman collection: `postman/rozanadejda-api.postman_collection.json`
-- Postman environment: `postman/rozanadejda-local.postman_environment.json`
-- **To‘liq texnik topshiriq (TZ):** `docs/TZ-rozanadejda-api.md` (shu jumladan **dinamik watermark** bo‘limi alohida)
+| Fayl | Vazifa |
+|------|--------|
+| [openapi.yaml](openapi.yaml) | OpenAPI 3 — barcha path, sxema, `bearerAuth` |
+| [docs/TZ-rozanadejda-api.md](docs/TZ-rozanadejda-api.md) | To‘liq texnik topshiriq (TZ), watermark va media batafsil |
+| [postman/rozanadejda-api.postman_collection.json](postman/rozanadejda-api.postman_collection.json) | Import qilinadigan kolleksiya |
+| [postman/rozanadejda-local.postman_environment.json](postman/rozanadejda-local.postman_environment.json) | `base_url`, `token`, id lar |
+
+### Loyihani ishga tushirish (qisqa)
+
+1. `composer install` — `scripts/ensure-app-key.php` orqali `.env` va bo‘sh `APP_KEY` avtomatik tuzatiladi (batafsil pastda).
+2. `.env` da `APP_URL`, ma’lumotlar bazasi va `DB_SOCKET` (MAMP) ni tekshiring.
+3. `php artisan migrate` (kerak bo‘lsa).
+4. `php artisan serve` yoki MAMP orqali `public` ni oching — ilova ildizi `APP_URL` bilan mos bo‘lsin.
 
 ### Swagger UI — qaysi URL?
 
-Swagger interfeysi **web** marshruti orqali beriladi (`/api` emas):
+Swagger **web** marshruti (`/api` emas):
 
 | Resurs | Manzil |
 |--------|--------|
-| **Swagger UI** | `{APP_URL}/docs` — masalan `http://localhost/docs` yoki MAMP uchun `http://localhost:8888/docs` |
+| **Swagger UI** | `{APP_URL}/docs` — masalan `http://127.0.0.1:8000/docs` yoki `http://localhost:8888/docs` |
 | **OpenAPI YAML** | `{APP_URL}/docs/openapi.yaml` |
 
-`.env` dagi `APP_URL` qaysi host/port bo‘lsa, `/docs` shu domen ostida ochiladi.
+`.env` dagi `APP_URL` qaysi host/port bo‘lsa, `/docs` shu domen ostida ochiladi. Postman `base_url` odatda `.../api` bo‘ladi — Swagger uchun alohida brauzer URL kerak (yuqoridagi `APP_URL`).
 
 ### Swagger/OpenAPI (tashqi editor)
 
-1. `openapi.yaml` faylini [Swagger Editor](https://editor.swagger.io/) ga yuklash mumkin.
-2. `servers.url` ni kerakli API bazasiga moslang (masalan, `http://localhost:8888/api`).
+1. [openapi.yaml](openapi.yaml) ni [Swagger Editor](https://editor.swagger.io/) ga yuklash mumkin.
+2. `servers` dagi `url` ni o‘z API bazangizga moslang (masalan `http://127.0.0.1:8000/api`).
 
 ### Postman import
 
-1. Postman ichida **Import** ni bosing.
-2. `postman/rozanadejda-api.postman_collection.json` faylini tanlang.
-3. So‘ng `postman/rozanadejda-local.postman_environment.json` ni import qiling.
-4. Environment ni tanlab, `base_url` va `token` qiymatlarini to‘ldiring.
+1. Postman: **Import** → `postman/rozanadejda-api.postman_collection.json`
+2. Keyin `postman/rozanadejda-local.postman_environment.json`
+3. Environment tanlang: `base_url` — API (`http://127.0.0.1:8000/api` kabi); `web_base_url` — Swagger uchun ilova ildizi (`http://127.0.0.1:8000`, `/api` siz); `token` (Login dan keyin)
 
 ### MissingAppKeyException («No application encryption key»)
 
-Agar brauzerda shu xato chiqsa:
+1. Loyiha ildizida `.env` bor-yo‘qligi; yo‘q bo‘lsa: `cp .env.example .env`
+2. `php artisan key:generate`
+3. `php artisan config:clear`
 
-1. Loyiha ildizida `.env` borligini tekshiring; yo‘q bo‘lsa: `cp .env.example .env`
-2. Kalit yarating: `php artisan key:generate`
-3. Eski config keshi bo‘lsa: `php artisan config:clear`
+`composer install` dan keyin `post-install-cmd` → `scripts/ensure-app-key.php` ishlaydi.
 
-`composer install` dan keyin `post-install-cmd` avtomatik ravishda `scripts/ensure-app-key.php` ishlaydi — `.env` bo‘lmasa nusxa oladi va bo‘sh `APP_KEY` bo‘lsa `key:generate` chaqiradi.
+### `Class "Route" not found` (welcome sahifa)
+
+`config/app.php` da Laravel standart facade aliaslari `Facade::defaultAliases()` bilan qayta ulandi. Agar xato qaytsa: `php artisan config:clear`.
+
+### Marshrutlar yangilanganda
+
+Agar yangi API marshrutlari `route:list` da ko‘rinmasa: `php artisan route:clear` (yoki `route:cache` ni qayta yig‘ish).
 
 ### Token olish oqimi
 
 1. `Auth > Login` yoki `Auth > Register` request yuboring.
-2. `Login` requestida test script tokenni avtomatik ravishda `token` variable’iga saqlaydi.
-3. Keyin admin endpointlarni ishga tushiring (`/admin/*`).
+2. `Login` requestidagi test script `token` o‘zgaruvchisiga yozadi.
+3. Admin so‘rovlar: `GET/POST/PUT/PATCH/DELETE .../admin/*` (jumladan **watermark** — `openapi.yaml` va TZ bo‘lim 5).
