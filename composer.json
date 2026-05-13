@@ -38,13 +38,15 @@
     "scripts": {
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover --ansi"
+            "@php artisan package:discover --ansi",
+            "@php scripts/publish-openapi.php"
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
         ],
         "post-install-cmd": [
-            "@php scripts/ensure-app-key.php"
+            "@php scripts/ensure-app-key.php",
+            "@php scripts/publish-openapi.php"
         ],
         "post-root-package-install": [
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""

@@ -13,7 +13,7 @@
 <script>
     window.onload = function () {
         window.ui = SwaggerUIBundle({
-            url: @json(url('/docs/openapi.yaml')) ,
+            url: @json(is_file(public_path('openapi.yaml')) ? asset('openapi.yaml') : route('docs.openapi')),
             dom_id: '#swagger-ui',
             persistAuthorization: true,
         });

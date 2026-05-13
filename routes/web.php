@@ -23,7 +23,9 @@ Route::get('/', function () {
 | Spec URL: {APP_URL}/docs/openapi.yaml
 */
 Route::get('/docs/openapi.yaml', function () {
-    $path = base_path('openapi.yaml');
+    $path = is_file(public_path('openapi.yaml'))
+        ? public_path('openapi.yaml')
+        : base_path('openapi.yaml');
     abort_unless(is_file($path), 404);
 
     return response()->file($path, [
