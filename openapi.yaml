@@ -954,7 +954,9 @@ components:
           items:
             type: integer
         files:
-          description: Optional media uploads — images (jpeg, png, webp get watermark), gif and video (mp4, webm, mov, avi) stored as-is.
+          description: |
+            Optional **multipart file** parts only (not JSON strings). Use form field `files` or `files[]` for multiple uploads.
+            Images jpeg/png/webp get watermark; gif and video (mp4, webm, mov, avi) stored as-is. Max ~50 MB per file.
           type: array
           items:
             type: string

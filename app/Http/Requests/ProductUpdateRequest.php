@@ -17,13 +17,35 @@ class ProductUpdateRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
+        // Faqat multipart fayl bo'lsa `hasFile` true bo'ladi. JSON/text bilan
+        // yuborilgan `files` (string, path, bo'sh) `file` qoidasida 422 berardi.
         if (! $this->hasFile('files')) {
+            if ($this->request->has('files')) {
+                $this->request->remove('files');
+            }
+
             return;
         }
 
         $uploaded = $this->file('files');
         if ($uploaded instanceof UploadedFile) {
             $this->files->set('files', [$uploaded]);
+
+            return;
+        }
+
+        if (is_array($uploaded)) {
+            $only = array_values(array_filter(
+                $uploaded,
+                static fn ($f): bool => $f instanceof UploadedFile && $f->isValid()
+            ));
+            if ($only === []) {
+                $this->files->remove('files');
+                $this->request->remove('files');
+
+                return;
+            }
+            $this->files->set('files', $only);
         }
     }
 
