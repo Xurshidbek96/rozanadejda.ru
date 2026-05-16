@@ -2,7 +2,7 @@
   "info": {
     "name": "Rozanadejda API",
     "_postman_id": "f8fd0d46-1caa-4d3f-a9a2-53a0e51f1f77",
-    "description": "OpenAPI 1.2.0 bilan mos kolleksiya.\n\n- Auth, User, Admin (categories, products, slides, orders), watermark (GET/POST/PUT/PATCH/DELETE), Public info\n- Mahsulot media: `images[].sort_order`, `media_type` (image/gif/video), `url` — admin yuklash tartibi\n- Watermark: yangi yuklashda eski current.png o‘chadi; DELETE custom faylni diskdan olib tashlaydi\n\nMuhit: `base_url` = API (…/api). Swagger: `{{web_base_url}}/docs`",
+    "description": "OpenAPI 1.2.0 bilan mos kolleksiya.\n\n- Auth, User, Admin (categories, products, slides, orders), watermark (GET/POST/PUT/PATCH/DELETE), Public info\n- Mahsulot media: `images[].sort_order`, `media_type` (image/gif/video), `url` — admin yuklash tartibi\n- Mahsulot yuklash: form-data da kalit **`files[]`** (bir nechta fayl uchun bir xil nomni takrorlang); `files` nomi ba’zi mijozlarda xato ishlaydi\n- Watermark: yangi yuklashda eski current.png o‘chadi; DELETE custom faylni diskdan olib tashlaydi\n\nMuhit: `base_url` = API (…/api). Swagger: `{{web_base_url}}/docs`",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "auth": {
@@ -118,7 +118,8 @@
                 { "key": "slug", "value": "test-product", "type": "text" },
                 { "key": "price", "value": "100", "type": "text" },
                 { "key": "quantity", "value": "10", "type": "text" },
-                { "key": "categories[]", "value": "1", "type": "text" }
+                { "key": "categories[]", "value": "1", "type": "text" },
+                { "key": "files[]", "type": "file", "src": "" }
               ]
             },
             "url": "{{base_url}}/admin/products"
@@ -133,7 +134,8 @@
               "mode": "formdata",
               "formdata": [
                 { "key": "name_uz", "value": "Updated Product", "type": "text" },
-                { "key": "price", "value": "120", "type": "text" }
+                { "key": "price", "value": "120", "type": "text" },
+                { "key": "files[]", "type": "file", "src": "" }
               ]
             },
             "url": "{{base_url}}/admin/products/{{product_id}}"
@@ -145,7 +147,11 @@
             "method": "POST",
             "body": {
               "mode": "formdata",
-              "formdata": [{ "key": "name_uz", "value": "Updated Product Legacy", "type": "text" }]
+              "formdata": [
+                { "key": "name_uz", "value": "Updated Product Legacy", "type": "text" },
+                { "key": "categories", "value": "1", "type": "text" },
+                { "key": "files[]", "type": "file", "src": "" }
+              ]
             },
             "url": "{{base_url}}/admin/productUpdate/{{product_id}}"
           }

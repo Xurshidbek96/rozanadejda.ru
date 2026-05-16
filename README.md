@@ -129,4 +129,4 @@ Agar yangi API marshrutlari `route:list` da ko‘rinmasa: `php artisan route:cle
 
 ### Mahsulot media tartibi (Front / User UI)
 
-`openapi.yaml` **v1.2.0**: mahsulot `images` elementlarida `url`, `media_type` (`image`, `gif`, `video`), `sort_order` — admin `files` yuborgan **ketma-ketlik** bilan mos. Front massivni tartib bo‘yicha chiqaradi: rasm/gif uchun `<img>`, video uchun `<video controls>`. Batafsil: [docs/TZ-rozanadejda-api.md](docs/TZ-rozanadejda-api.md) → §4.
+`openapi.yaml` **v1.2.0**: mahsulot `images` elementlarida `url`, `media_type` (`image`, `gif`, `video`), `sort_order` — admin `files[]` yuborgan **ketma-ketlik** bilan mos. Front massivni tartib bo‘yicha chiqaradi: rasm/gif uchun `<img>`, video uchun `<video controls>`. Batafsil: [docs/TZ-rozanadejda-api.md](docs/TZ-rozanadejda-api.md) → §4.

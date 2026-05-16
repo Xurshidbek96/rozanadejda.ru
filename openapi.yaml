@@ -11,7 +11,7 @@ info:
     **v1.2.0:** mahsulot `images` — `sort_order`, `media_type` (`image`|`gif`|`video`), `url`; admin yuklagan fayllar ketma-ketligi API javobida saqlanadi.
 
     **v1.1.0:** admin watermark `GET/POST/PUT/PATCH/DELETE /api/admin/watermark` (almashtirishda eski `current.png` diskdan o‘chadi);
-    mahsulot `files` uchun ixtiyoriy gif/video MIME; dinamik watermark mahsulot JPEG/PNG/WebP ga qo‘llanadi.
+    mahsulot `files[]` (multipart) uchun ixtiyoriy gif/video MIME; dinamik watermark mahsulot JPEG/PNG/WebP ga qo‘llanadi.
 
     **v1.0.0:** Sanctum, admin CRUD, buyurtmalar, public `info/*`, Postman kolleksiyasi bilan mos.
 servers:
@@ -953,10 +953,11 @@ components:
           type: array
           items:
             type: integer
-        files:
+        "files[]":
           description: |
-            Optional **multipart file** parts only (not JSON strings). Use form field `files` or `files[]` for multiple uploads.
-            Images jpeg/png/webp get watermark; gif and video (mp4, webm, mov, avi) stored as-is. Max ~50 MB per file.
+            **Form field name must be `files[]`** (Postman, brauzer, mobil) — bir nechta fayl uchun bir xil kalitni takrorlang.
+            Faqat `multipart/form-data` ichidagi haqiqiy fayl (JSON string emas). Bitta fayl uchun ham `files[]` ishlating.
+            Rasm: jpeg/png/webp → watermark; gif va video (mp4, webm, mov, avi) o‘zgartirilmasdan. ~50 MB gacha har biri.
           type: array
           items:
             type: string

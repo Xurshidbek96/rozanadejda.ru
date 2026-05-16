@@ -6,6 +6,7 @@ use App\Http\Resources\ProductResource;
 use App\Models\Image;
 use App\Models\Product;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Validation\Rule;
 use Intervention\Image\Facades\Image as ImageManager;
 
 class ProductAdminService
@@ -41,7 +42,9 @@ class ProductAdminService
 
     private function storeUploadedMedia(UploadedFile $file, Product $product, int $sortOrder): void
     {
+        // Barcha UploadedFile o‘qimlari move() dan oldin — move() tmp faylni yo‘q qiladi.
         $applyWatermark = $this->shouldApplyWatermark($file);
+        $mediaType = $this->detectMediaType($file);
         $safeBase = preg_replace('/[^a-zA-Z0-9._-]/', '_', $file->getClientOriginalName());
         $filename = time() . '-' . uniqid('', true) . '-' . $safeBase;
         $directory = public_path('images/products');
@@ -68,8 +71,49 @@ class ProductAdminService
             'product_id' => $product->id,
             'filename' => $filename,
             'sort_order' => $sortOrder,
-            'media_type' => $this->detectMediaType($file),
+            'media_type' => $mediaType,
         ]);
+    }
+
+    /**
+     * Form-data / JSON da `categories` ba'zan "1,2,3" yoki bitta string sifatida keladi — sync() uchun massiv kerak.
+     *
+     * @param  mixed  $categories
+     * @return array<int, int>
+     */
+    private function normalizedCategoryIds($categories): array
+    {
+        if ($categories === null || $categories === '') {
+            return [];
+        }
+
+        if (is_string($categories)) {
+            $categories = preg_split('/\s*,\s*/', $categories, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+        }
+
+        if (! is_array($categories)) {
+            return [];
+        }
+
+        $ids = [];
+        foreach ($categories as $item) {
+            if (is_array($item)) {
+                $ids = array_merge($ids, $this->normalizedCategoryIds($item));
+
+                continue;
+            }
+            if (is_string($item) && str_contains($item, ',')) {
+                $ids = array_merge($ids, $this->normalizedCategoryIds($item));
+
+                continue;
+            }
+            $id = (int) $item;
+            if ($id > 0) {
+                $ids[] = $id;
+            }
+        }
+
+        return array_values(array_unique($ids));
     }
 
     public function getAllProducts()
@@ -82,15 +126,15 @@ class ProductAdminService
     public function store($request)
     {
         $request->validate([
-            'name_uz' => 'unique:products,name_uz,except,id',
-            'name_ru' => 'unique:products,name_ru,except,id',
-            'name_en' => 'unique:products,name_en,except,id',
-            'slug' => 'required'
+            'name_uz' => 'unique:products,name_uz',
+            'name_ru' => 'unique:products,name_ru',
+            'name_en' => 'unique:products,name_en',
+            'slug' => 'required',
         ]);
 
         $requestData = $request->except('files', 'categories');
         $product = Product::create($requestData);
-        $product->categories()->attach($request->categories);
+        $product->categories()->attach($this->normalizedCategoryIds($request->input('categories')));
         
         if ($request->hasFile('files')) {
             $files = $request->file('files');
@@ -112,14 +156,13 @@ class ProductAdminService
     {
         // return $request ;
         $request->validate([
-            'name_uz' => 'unique:products,name_uz,except,id',
-            'name_ru' => 'unique:products,name_ru,except,id',
-            'name_en' => 'unique:products,name_en,except,id',
-            // 'slug' => 'required'
+            'name_uz' => ['sometimes', Rule::unique('products', 'name_uz')->ignore($product->id)],
+            'name_ru' => ['sometimes', Rule::unique('products', 'name_ru')->ignore($product->id)],
+            'name_en' => ['sometimes', Rule::unique('products', 'name_en')->ignore($product->id)],
         ]);
         $requestData = $request->except('files', 'categories');
         $product->update($requestData);
-        $product->categories()->sync($request->categories);
+        $product->categories()->sync($this->normalizedCategoryIds($request->input('categories')));
 
         // Rasmlarni yangilash
         if ($request->hasFile('files')) {

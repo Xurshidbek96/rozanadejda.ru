@@ -40,7 +40,7 @@ Batafsil kontrakt: repodagi `openapi.yaml`.
 
 ## 4. Mahsulot media (rasmlar, GIF, video)
 
-- **Maydon:** `files` — ixtiyoriy massiv (yoki bitta fayl; FormRequest `prepareForValidation` bitta faylni massivga aylantiradi).
+- **Maydon:** `files[]` — ixtiyoriy, bir yoki bir nechta fayl (Postman / `FormData` da kalit aynan **`files[]`** bo‘lishi kerak; `files` nomi ba’zi mijozlarda noto‘g‘ri massivlashadi).
 - **Ruxsat etilgan turlar:** `jpeg, jpg, png, gif, webp, mp4, webm, mov, avi`.
 - **Hajm:** har bir fayl uchun taxminan **50 MB** chegara (`ProductStoreRequest` / `ProductUpdateRequest` — `max:51200` KB); server `upload_max_filesize` / `post_max_size` bilan ham mos bo‘lishi kerak.
 - **Suv belgisi:** faqat statik rasm formatlarida (`jpeg`, `png`, `webp`) qo‘llanadi; **GIF** va **video** o‘zgartirilmasdan saqlanadi.
@@ -52,7 +52,7 @@ Batafsil kontrakt: repodagi `openapi.yaml`.
 - `GET /api/info/show-product/{slug}` va mahsulot obyektidagi `images` — tartiblangan ro‘yxat.
 - Har bir element: `url`, `media_type` (`image` \| `gif` \| `video`), `sort_order`.
 - Render: `image` va `gif` → `<img src="{{ url }}" alt="" loading="lazy" />`; `video` → `<video src="{{ url }}" controls playsinline></video>`.
-- Admin forma `files` maydonini **bir xil tartibda** yuborsin (odatda input `multiple` yoki ketma-ket tanlangan fayllar tartibi).
+- Admin forma `files[]` maydonini **bir xil tartibda** yuborsin (odatda `multiple` yoki ketma-ket `append('files[]', file)`).
 
 ---
 
