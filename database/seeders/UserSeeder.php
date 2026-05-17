@@ -21,7 +21,6 @@ class UserSeeder extends Seeder
         ]);
         $user->assignRole([1]);
 
-        
         // 2
         $user = User::create([
             'name' => 'Admin',
